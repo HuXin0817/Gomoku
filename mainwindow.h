@@ -13,8 +13,8 @@ class MainWindow final : public QMainWindow
 
     static constexpr auto BOARD_PIECE_SPACING = 35;
     static constexpr auto BOARD_LINE_WIDTH = static_cast<float>(BOARD_PIECE_SPACING) / 20.0;
-    static constexpr int BOARD_STAR_POINT_WIDTH = static_cast<int>(BOARD_LINE_WIDTH) * 3;
-    static constexpr int BOARD_PIECE_WIDTH = static_cast<int>(BOARD_LINE_WIDTH * 8);
+    static constexpr auto BOARD_STAR_POINT_WIDTH = static_cast<int>(BOARD_LINE_WIDTH) * 3;
+    static constexpr auto BOARD_PIECE_WIDTH = static_cast<int>(BOARD_LINE_WIDTH * 8);
     static constexpr auto BOARD_MARGIN = BOARD_PIECE_SPACING / 4 * 5;
     static constexpr auto BOARD_SIZE = BOARD_MARGIN * 2 + BOARD_PIECE_SPACING * (CHESS_NUMBER - 1);
     static constexpr int StarPositions[] = {3, CHESS_NUMBER / 2, CHESS_NUMBER - 4};
