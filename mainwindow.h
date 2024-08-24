@@ -7,8 +7,9 @@
 #include "common.h"
 #include "board.h"
 
-class MainWindow final : public QMainWindow {
-Q_OBJECT
+class MainWindow final : public QMainWindow
+{
+    Q_OBJECT
 
     static constexpr auto BOARD_PIECE_SPACING = 35;
     static constexpr auto BOARD_LINE_WIDTH = static_cast<float>(BOARD_PIECE_SPACING) / 20.0;

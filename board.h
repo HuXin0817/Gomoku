@@ -2,7 +2,8 @@
 
 #include "common.h"
 
-class Board {
+class Board
+{
 public:
     void addPiece(int x, int y);
 
