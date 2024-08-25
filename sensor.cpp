@@ -29,7 +29,7 @@ void Sensor::paintEvent(QPaintEvent *event)
     painter.setRenderHint(QPainter::Antialiasing);
 
     QPointF point(Config::BOARD_PIECE_SPACING / 2, Config::BOARD_PIECE_SPACING / 2);
-    QPointF shadowPoint(point.x() + 1, point.y() + 1);
+    QPointF shadowPoint(point.x() * 1.05, point.y() * 1.05);
     painter.setPen(QPen(LineColor, 0));
 
     switch (player)
