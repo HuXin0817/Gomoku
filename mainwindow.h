@@ -20,10 +20,8 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    Board board;
-    std::vector<QLine> lines;
-    std::vector<QPointF> starPoints;
-    std::vector<std::vector<Sensor *>> widgets;
+    std::unique_ptr<Board> board;
+    std::vector<std::vector<std::unique_ptr<Sensor>>> widgets;
 
     static double transPos(int x) { return BOARD_MARGIN() + x * BOARD_PIECE_SPACING; }
 

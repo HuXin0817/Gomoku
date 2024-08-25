@@ -8,35 +8,20 @@ static double BOARD_PIECE_SPACING = 36.0;
 
 static double BOARD_LINE_WIDTH() { return BOARD_PIECE_SPACING / 20.0; }
 
-static int BOARD_STAR_POINT_WIDTH()
-{
-    return static_cast<int>((BOARD_LINE_WIDTH() * 2));
-}
+static double BOARD_STAR_POINT_WIDTH() { return BOARD_LINE_WIDTH() * 2; }
 
-static int BOARD_PIECE_WIDTH()
-{
-    return static_cast<int>((BOARD_LINE_WIDTH() * 8));
-}
+static double BOARD_PIECE_WIDTH() { return BOARD_LINE_WIDTH() * 8; }
 
 static double BOARD_MARGIN() { return BOARD_PIECE_SPACING / 4 * 5; }
 
-static int BOARD_SIZE()
-{
-    return static_cast<int>((BOARD_MARGIN() * 2 + BOARD_PIECE_SPACING * (CHESS_NUMBER - 1)));
-}
+static double BOARD_SIZE() { return BOARD_MARGIN() * 2 + BOARD_PIECE_SPACING * (CHESS_NUMBER - 1); }
 
-static std::vector<int> StarPositions()
-{
-    if (CHESS_NUMBER > 11)
-    {
+static std::vector<int> StarPositions() {
+    if (CHESS_NUMBER > 11) {
         return {3, CHESS_NUMBER / 2, CHESS_NUMBER - 4};
-    }
-    else if (CHESS_NUMBER > 9)
-    {
+    } else if (CHESS_NUMBER > 9) {
         return {2, CHESS_NUMBER / 2, CHESS_NUMBER - 3};
-    }
-    else
-    {
+    } else {
         return {CHESS_NUMBER / 2};
     }
 }
@@ -49,8 +34,7 @@ static constexpr QColor WriteMidPieceColor = QColor(235, 235, 235);
 static constexpr QColor WriteFringePieceColor = QColor(205, 205, 205);
 static constexpr QColor WriteEdgePieceColor = QColor(180, 180, 180);
 
-enum class ChessPlayer
-{
+enum class ChessPlayer {
     NONE,
     BLACK,
     WRITE

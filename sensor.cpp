@@ -2,7 +2,7 @@
 
 bool Sensor::handledGameOver;
 
-Sensor::Sensor(QWidget *parent, Board *nowBoard, int x, int y, std::vector<std::vector<Sensor *>> *widgets)
+Sensor::Sensor(QWidget *parent, Board *nowBoard, int x, int y, std::vector<std::vector<std::unique_ptr<Sensor>>> *widgets)
     : QWidget(parent), x(x), y(y), nowBoard(nowBoard), widgets(widgets), opacityEffect(this), animation(&opacityEffect, "opacity", this)
 {
     setGraphicsEffect(&opacityEffect);

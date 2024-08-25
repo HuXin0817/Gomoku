@@ -1,42 +1,24 @@
 #include "mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), widgets(std::vector(CHESS_NUMBER, std::vector<Sensor *>(CHESS_NUMBER)))
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), widgets(CHESS_NUMBER)
 {
-    setWindowOpacity(0.9);
-    setFixedSize(BOARD_SIZE(), BOARD_SIZE());
+    board = std::make_unique<Board>();
+    for (auto &w : widgets)
+    {
+        w = std::vector<std::unique_ptr<Sensor>>(CHESS_NUMBER);
+    }
+    setWindowOpacity(0.95);
+    int boardSize = static_cast<int>(BOARD_SIZE());
+    setFixedSize(boardSize, boardSize);
     Sensor::handledGameOver = false;
 
     for (int i = 0; i < CHESS_NUMBER; i++)
     {
         for (int j = 0; j < CHESS_NUMBER; j++)
         {
-            if (i + 1 < CHESS_NUMBER)
-            {
-                lines.emplace_back(transPos(i), transPos(j), transPos(i + 1), transPos(j));
-            }
-            if (j + 1 < CHESS_NUMBER)
-            {
-                lines.emplace_back(transPos(i), transPos(j), transPos(i), transPos(j + 1));
-            }
-        }
-    }
-
-    auto starPositions = StarPositions();
-    for (int i : starPositions)
-    {
-        for (int j : starPositions)
-        {
-            starPoints.emplace_back(transPos(i), transPos(j));
-        }
-    }
-
-    for (int i = 0; i < CHESS_NUMBER; i++)
-    {
-        for (int j = 0; j < CHESS_NUMBER; j++)
-        {
-            widgets[i][j] = new Sensor(this, &board, i, j, &widgets);
-            int mx = static_cast<int>((transPos(i) - BOARD_PIECE_SPACING / 2));
-            int my = static_cast<int>((transPos(j) - BOARD_PIECE_SPACING / 2));
+            widgets[i][j] = std::make_unique<Sensor>(this, board.get(), i, j, &widgets);
+            int mx = static_cast<int>(transPos(i) - BOARD_PIECE_SPACING / 2);
+            int my = static_cast<int>(transPos(j) - BOARD_PIECE_SPACING / 2);
             widgets[i][j]->move(mx, my);
             int space = static_cast<int>(BOARD_PIECE_SPACING);
             widgets[i][j]->resize(space, space);
@@ -92,20 +74,38 @@ void MainWindow::paintEvent(QPaintEvent *event)
     painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(rect(), BackGroundColor);
     painter.setPen(QPen(LineColor, BOARD_LINE_WIDTH()));
-    for (auto &line : lines)
+    for (int i = 0; i < CHESS_NUMBER; i++)
     {
-        painter.drawLine(line);
+        for (int j = 0; j < CHESS_NUMBER; j++)
+        {
+            QPointF point1(transPos(i), transPos(j));
+            if (i + 1 < CHESS_NUMBER)
+            {
+                QPointF point2(transPos(i + 1), transPos(j));
+                painter.drawLine(point1, point2);
+            }
+            if (j + 1 < CHESS_NUMBER)
+            {
+                QPointF point2(transPos(i), transPos(j + 1));
+                painter.drawLine(point1, point2);
+            }
+        }
     }
     painter.setBrush(LineColor);
-    for (const auto &point : starPoints)
+    auto starPositions = StarPositions();
+    for (int i : starPositions)
     {
-        painter.drawEllipse(point, BOARD_STAR_POINT_WIDTH(), BOARD_STAR_POINT_WIDTH());
+        for (int j : starPositions)
+        {
+            QPointF point(transPos(i), transPos(j));
+            painter.drawEllipse(point, BOARD_STAR_POINT_WIDTH(), BOARD_STAR_POINT_WIDTH());
+        }
     }
 }
 
 void MainWindow::undo()
 {
-    auto moveRecord = board.moveRecords;
+    auto moveRecord = board->moveRecords;
     moveRecord.pop_back();
     reload(moveRecord);
 }
@@ -113,7 +113,7 @@ void MainWindow::undo()
 void MainWindow::addBoardSize()
 {
     BOARD_PIECE_SPACING *= 1.1;
-    reload(board.moveRecords);
+    reload(board->moveRecords);
 }
 
 void MainWindow::reduceBoardSize()
@@ -121,14 +121,14 @@ void MainWindow::reduceBoardSize()
     if (BOARD_PIECE_SPACING / 1.1 > 30)
     {
         BOARD_PIECE_SPACING /= 1.1;
-        reload(board.moveRecords);
+        reload(board->moveRecords);
     }
 }
 
 void MainWindow::addChessNumber()
 {
     CHESS_NUMBER += 2;
-    reload(board.moveRecords);
+    reload(board->moveRecords);
 }
 
 void MainWindow::reduceChessNumber()
@@ -136,7 +136,7 @@ void MainWindow::reduceChessNumber()
     if (CHESS_NUMBER - 2 > 0)
     {
         CHESS_NUMBER -= 2;
-        reload(board.moveRecords);
+        reload(board->moveRecords);
     }
 }
 

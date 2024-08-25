@@ -13,7 +13,7 @@ class Sensor final : public QWidget
     Q_OBJECT
 
 public:
-    Sensor(QWidget *parent, Board *nowBoard, int x, int y, std::vector<std::vector<Sensor *>> *widgets);
+    Sensor(QWidget *parent, Board *nowBoard, int x, int y, std::vector<std::vector<std::unique_ptr<Sensor>>> *widgets);
 
     void flashing(double midValue, int duration);
 
@@ -40,7 +40,7 @@ private:
     bool markBox = false;
     ChessPlayer pressedPlayer = ChessPlayer::NONE;
     Board *nowBoard;
-    std::vector<std::vector<Sensor *>> *widgets;
+    std::vector<std::vector<std::unique_ptr<Sensor>>> *widgets;
     QGraphicsOpacityEffect opacityEffect;
     QPropertyAnimation animation;
 };
