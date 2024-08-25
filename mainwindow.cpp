@@ -3,7 +3,8 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           widgets(std::vector(CHESS_NUMBER, std::vector<Sensor *>(CHESS_NUMBER)))
 {
-    setFixedSize(static_cast<int>(BOARD_SIZE()), static_cast<int>(BOARD_SIZE()));
+    setWindowOpacity(0.9);
+    setFixedSize(BOARD_SIZE(), BOARD_SIZE());
     Sensor::handledGameOver = false;
 
     for (int i = 0; i < CHESS_NUMBER; i++)
@@ -49,6 +50,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     auto *reduceChessNumberAction = new QAction("Reduce Chess Number", this);
     auto *addChessWinNumberAction = new QAction("Add Chess Win Number", this);
     auto *reduceChessWinNumberAction = new QAction("Reduce Chess Win Number", this);
+
+    restartAction->setShortcut(QKeySequence("Ctrl+R")); 
+    undoAction->setShortcut(QKeySequence("Ctrl+Z"));    
+    addBoardSizeAction->setShortcut(QKeySequence("Ctrl+Up"));
+    reduceBoardSizeAction->setShortcut(QKeySequence("Ctrl+Down"));
+    addChessNumberAction->setShortcut(QKeySequence("Ctrl+Right"));
+    reduceChessNumberAction->setShortcut(QKeySequence("Ctrl+Left"));
+    addChessWinNumberAction->setShortcut(QKeySequence("Ctrl+Shift+Right"));
+    reduceChessWinNumberAction->setShortcut(QKeySequence("Ctrl+Shift+Left"));
+
     gameControlMenu->addAction(restartAction);
     gameControlMenu->addAction(undoAction);
     gameControlMenu->addSeparator();
@@ -63,7 +74,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     setMenuBar(menuBar);
     connect(restartAction, &QAction::triggered, this, &MainWindow::restart);
     connect(undoAction, &QAction::triggered, this, &MainWindow::undo);
-
     connect(addBoardSizeAction, &QAction::triggered, this, &MainWindow::addBoardSize);
     connect(reduceBoardSizeAction, &QAction::triggered, this, &MainWindow::reduceBoardSize);
     connect(addChessNumberAction, &QAction::triggered, this, &MainWindow::addChessNumber);
@@ -86,8 +96,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
     painter.setBrush(LineColor);
     for (const auto &point : starPoints)
     {
-        painter.drawEllipse(point, static_cast<int>(BOARD_STAR_POINT_WIDTH()),
-                            static_cast<int>(BOARD_STAR_POINT_WIDTH()));
+        painter.drawEllipse(point, BOARD_STAR_POINT_WIDTH(), BOARD_STAR_POINT_WIDTH());
     }
 }
 
@@ -155,7 +164,7 @@ void MainWindow::reload(const std::vector<std::pair<int, int>> &moveRecord)
 
 void MainWindow::addChessWinNumber()
 {
-    if (Board::WIN_PIECE_NUMBER + 1 < CHESS_NUMBER)
+    if (Board::WIN_PIECE_NUMBER + 1 <= CHESS_NUMBER)
     {
         Board::WIN_PIECE_NUMBER++;
         restart();

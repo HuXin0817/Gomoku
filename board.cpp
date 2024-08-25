@@ -6,14 +6,14 @@ bool Board::checkLine(int x, int y, int dx, int dy) const
 {
     int count = 0;
     int cx = x, cy = y;
-    while (checkInBoard(x, y) && chessMap[cx][cy] == chessMap[x][y])
+    while (checkInBoard(cx, cy) && chessMap[cx][cy] == chessMap[x][y])
     {
         cx -= dx;
         cy -= dy;
         count++;
     }
     cx = x, cy = y;
-    while (checkInBoard(x, y) && chessMap[cx][cy] == chessMap[x][y])
+    while (checkInBoard(cx, cy) && chessMap[cx][cy] == chessMap[x][y])
     {
         cx += dx;
         cy += dy;

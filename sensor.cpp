@@ -28,8 +28,8 @@ void Sensor::paintEvent(QPaintEvent *event)
     }
     painter.setRenderHint(QPainter::Antialiasing);
 
-    QPoint point(BOARD_PIECE_SPACING / 2, BOARD_PIECE_SPACING / 2);
-    QPoint shadowPoint(point.x() + 1, point.y() + 1);
+    QPointF point(BOARD_PIECE_SPACING / 2, BOARD_PIECE_SPACING / 2);
+    QPointF shadowPoint(point.x() + 1, point.y() + 1);
     painter.setPen(QPen(LineColor, 0));
 
     switch (player)
@@ -39,24 +39,24 @@ void Sensor::paintEvent(QPaintEvent *event)
     case ChessPlayer::BLACK:
     {
         painter.setBrush(LineColor);
-        painter.drawEllipse(shadowPoint, static_cast<int>(BOARD_PIECE_WIDTH()), static_cast<int>(BOARD_PIECE_WIDTH()));
+        painter.drawEllipse(shadowPoint, BOARD_PIECE_WIDTH(), BOARD_PIECE_WIDTH());
         QRadialGradient gradient(point.x(), point.y(), BOARD_PIECE_WIDTH());
         gradient.setColorAt(0, BlackMidPieceColor);
         gradient.setColorAt(1, BlackFringePieceColor);
         painter.setBrush(gradient);
-        painter.drawEllipse(point, static_cast<int>(BOARD_PIECE_WIDTH()), static_cast<int>(BOARD_PIECE_WIDTH()));
+        painter.drawEllipse(point, BOARD_PIECE_WIDTH(), BOARD_PIECE_WIDTH());
         break;
     }
     case ChessPlayer::WRITE:
     {
         painter.setBrush(LineColor);
-        painter.drawEllipse(shadowPoint, static_cast<int>(BOARD_PIECE_WIDTH()), static_cast<int>(BOARD_PIECE_WIDTH()));
+        painter.drawEllipse(shadowPoint, BOARD_PIECE_WIDTH(), BOARD_PIECE_WIDTH());
         QRadialGradient gradient(point.x(), point.y(), BOARD_PIECE_WIDTH());
         gradient.setColorAt(0, WriteMidPieceColor);
         gradient.setColorAt(1, WriteFringePieceColor);
         painter.setPen(QPen(WriteEdgePieceColor, 0));
         painter.setBrush(gradient);
-        painter.drawEllipse(point, static_cast<int>(BOARD_PIECE_WIDTH()), static_cast<int>(BOARD_PIECE_WIDTH()));
+        painter.drawEllipse(point, BOARD_PIECE_WIDTH(), BOARD_PIECE_WIDTH());
         painter.setPen(QPen(LineColor, 0));
         break;
     }
@@ -64,7 +64,7 @@ void Sensor::paintEvent(QPaintEvent *event)
     if (markBox)
     {
         painter.setBrush(LineColor);
-        painter.drawEllipse(point, static_cast<int>(BOARD_STAR_POINT_WIDTH()), static_cast<int>(BOARD_STAR_POINT_WIDTH()));
+        painter.drawEllipse(point, BOARD_STAR_POINT_WIDTH(), BOARD_STAR_POINT_WIDTH());
     }
 }
 

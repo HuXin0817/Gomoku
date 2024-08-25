@@ -22,9 +22,8 @@ protected:
 private:
     Board board;
     std::vector<QLine> lines;
-    std::vector<QPoint> starPoints;
+    std::vector<QPointF> starPoints;
     std::vector<std::vector<Sensor *>> widgets;
-    bool over = false;
 
     static double transPosition(int x) { return BOARD_MARGIN() + x * BOARD_PIECE_SPACING; }
 

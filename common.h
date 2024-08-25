@@ -8,13 +8,13 @@ static double BOARD_PIECE_SPACING = 36.0;
 
 static auto BOARD_LINE_WIDTH() { return BOARD_PIECE_SPACING / 20.0; }
 
-static auto BOARD_STAR_POINT_WIDTH() { return BOARD_LINE_WIDTH() * 2; }
+static int BOARD_STAR_POINT_WIDTH() { return BOARD_LINE_WIDTH() * 2; }
 
-static auto BOARD_PIECE_WIDTH() { return BOARD_LINE_WIDTH() * 8; }
+static int BOARD_PIECE_WIDTH() { return BOARD_LINE_WIDTH() * 8; }
 
 static auto BOARD_MARGIN() { return BOARD_PIECE_SPACING / 4 * 5; }
 
-static auto BOARD_SIZE() { return BOARD_MARGIN() * 2 + BOARD_PIECE_SPACING * (CHESS_NUMBER - 1); }
+static int BOARD_SIZE() { return BOARD_MARGIN() * 2 + BOARD_PIECE_SPACING * (CHESS_NUMBER - 1); }
 
 static std::vector<int> StarPositions()
 {
