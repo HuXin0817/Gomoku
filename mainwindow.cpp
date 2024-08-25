@@ -85,6 +85,10 @@ void MainWindow::restart() { reload({}); }
 void MainWindow::undo()
 {
     auto moveRecord = board->getMoveRecords();
+    if (moveRecord.empty())
+    {
+        return;
+    }
     moveRecord.pop_back();
     reload(moveRecord);
 }
