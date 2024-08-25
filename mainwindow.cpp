@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
-                                          widgets(std::vector(CHESS_NUMBER, std::vector<Sensor *>(CHESS_NUMBER)))
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), widgets(std::vector(CHESS_NUMBER, std::vector<Sensor *>(CHESS_NUMBER)))
 {
     setWindowOpacity(0.9);
     setFixedSize(BOARD_SIZE(), BOARD_SIZE());
@@ -51,8 +50,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     auto *addChessWinNumberAction = new QAction("Add Chess Win Number", this);
     auto *reduceChessWinNumberAction = new QAction("Reduce Chess Win Number", this);
 
-    restartAction->setShortcut(QKeySequence("Ctrl+R")); 
-    undoAction->setShortcut(QKeySequence("Ctrl+Z"));    
+    restartAction->setShortcut(QKeySequence("Ctrl+R"));
+    undoAction->setShortcut(QKeySequence("Ctrl+Z"));
     addBoardSizeAction->setShortcut(QKeySequence("Ctrl+Up"));
     reduceBoardSizeAction->setShortcut(QKeySequence("Ctrl+Down"));
     addChessNumberAction->setShortcut(QKeySequence("Ctrl+Right"));
