@@ -19,8 +19,6 @@ public:
 
     void press();
 
-    void unmark();
-
     static bool handledGameOver;
 
 protected:
@@ -37,7 +35,6 @@ private:
     int y;
     bool isMouseOn = false;
     bool isPressed = false;
-    bool markBox = false;
     ChessPlayer pressedPlayer = ChessPlayer::NONE;
     Board *nowBoard;
     std::vector<std::vector<std::unique_ptr<Sensor>>> *widgets;

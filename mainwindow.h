@@ -3,7 +3,7 @@
 #include <QMainWindow>
 #include <QPainter>
 #include <QMouseEvent>
-#include <QMenuBar>
+#include <QShortcut>
 
 #include "common.h"
 #include "board.h"

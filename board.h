@@ -5,9 +5,7 @@
 class Board
 {
 public:
-    static int WIN_PIECE_NUMBER;
-
-    Board() : chessMap(CHESS_NUMBER, std::vector<ChessPlayer>(CHESS_NUMBER)) {}
+    Board() : chessMap(Config::CHESS_NUMBER, std::vector<ChessPlayer>(Config::CHESS_NUMBER)) {}
 
     void addPiece(int x, int y);
 
@@ -19,7 +17,7 @@ public:
 
     std::vector<std::pair<int, int>> winPieces() const;
 
-    std::vector<std::pair<int, int>> &getMoveRecords() { return moveRecords; }
+    std::vector<std::pair<int, int>> getMoveRecords() { return moveRecords; }
 
 private:
     bool gameOver = false;

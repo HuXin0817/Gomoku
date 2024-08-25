@@ -28,7 +28,7 @@ void Sensor::paintEvent(QPaintEvent *event)
     }
     painter.setRenderHint(QPainter::Antialiasing);
 
-    QPointF point(BOARD_PIECE_SPACING / 2, BOARD_PIECE_SPACING / 2);
+    QPointF point(Config::BOARD_PIECE_SPACING / 2, Config::BOARD_PIECE_SPACING / 2);
     QPointF shadowPoint(point.x() + 1, point.y() + 1);
     painter.setPen(QPen(LineColor, 0));
 
@@ -39,32 +39,27 @@ void Sensor::paintEvent(QPaintEvent *event)
     case ChessPlayer::BLACK:
     {
         painter.setBrush(LineColor);
-        painter.drawEllipse(shadowPoint, BOARD_PIECE_WIDTH(), BOARD_PIECE_WIDTH());
-        QRadialGradient gradient(point.x(), point.y(), BOARD_PIECE_WIDTH());
+        painter.drawEllipse(shadowPoint, Config::BOARD_PIECE_WIDTH(), Config::BOARD_PIECE_WIDTH());
+        QRadialGradient gradient(point.x(), point.y(), Config::BOARD_PIECE_WIDTH());
         gradient.setColorAt(0, BlackMidPieceColor);
         gradient.setColorAt(1, BlackFringePieceColor);
         painter.setBrush(gradient);
-        painter.drawEllipse(point, BOARD_PIECE_WIDTH(), BOARD_PIECE_WIDTH());
+        painter.drawEllipse(point, Config::BOARD_PIECE_WIDTH(), Config::BOARD_PIECE_WIDTH());
         break;
     }
     case ChessPlayer::WRITE:
     {
         painter.setBrush(LineColor);
-        painter.drawEllipse(shadowPoint, BOARD_PIECE_WIDTH(), BOARD_PIECE_WIDTH());
-        QRadialGradient gradient(point.x(), point.y(), BOARD_PIECE_WIDTH());
+        painter.drawEllipse(shadowPoint, Config::BOARD_PIECE_WIDTH(), Config::BOARD_PIECE_WIDTH());
+        QRadialGradient gradient(point.x(), point.y(), Config::BOARD_PIECE_WIDTH());
         gradient.setColorAt(0, WriteMidPieceColor);
         gradient.setColorAt(1, WriteFringePieceColor);
         painter.setPen(QPen(WriteEdgePieceColor, 0));
         painter.setBrush(gradient);
-        painter.drawEllipse(point, BOARD_PIECE_WIDTH(), BOARD_PIECE_WIDTH());
+        painter.drawEllipse(point, Config::BOARD_PIECE_WIDTH(), Config::BOARD_PIECE_WIDTH());
         painter.setPen(QPen(LineColor, 0));
         break;
     }
-    }
-    if (markBox)
-    {
-        painter.setBrush(LineColor);
-        painter.drawEllipse(point, BOARD_STAR_POINT_WIDTH(), BOARD_STAR_POINT_WIDTH());
     }
 }
 
@@ -113,14 +108,9 @@ void Sensor::flashing(double midValue, int duration)
     animation.start();
 }
 
-void Sensor::unmark()
-{
-    markBox = false;
-    update();
-}
-
 void Sensor::press()
 {
+    animation.stop();
     opacityEffect.setOpacity(1.0);
     if (isPressed)
     {
@@ -132,18 +122,10 @@ void Sensor::press()
     }
     isPressed = true;
     pressedPlayer = nowBoard->getNowPlayer();
-    if (!nowBoard->getMoveRecords().empty())
-    {
-        auto &lastPoint = nowBoard->getMoveRecords().back();
-        (*widgets)[lastPoint.first][lastPoint.second]->unmark();
-    }
     nowBoard->addPiece(x, y);
-    markBox = true;
     if (!handledGameOver && nowBoard->isGameOver())
     {
         handledGameOver = true;
-        auto &lastPoint = nowBoard->getMoveRecords().back();
-        (*widgets)[lastPoint.first][lastPoint.second]->unmark();
         auto pieces = nowBoard->winPieces();
         for (auto [px, py] : pieces)
         {

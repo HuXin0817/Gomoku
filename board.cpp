@@ -1,7 +1,5 @@
 #include "board.h"
 
-int Board::WIN_PIECE_NUMBER = 5;
-
 bool Board::checkLine(int x, int y, int dx, int dy) const
 {
     int count = 0;
@@ -19,7 +17,7 @@ bool Board::checkLine(int x, int y, int dx, int dy) const
         cy += dy;
         count++;
     }
-    return count > WIN_PIECE_NUMBER;
+    return count > Config::WIN_PIECE_NUMBER;
 }
 
 bool Board::checkWin(int x, int y) const
@@ -61,11 +59,11 @@ bool Board::judgeIsPos(int x, int y) const
     {
         return false;
     }
-    if (x < 0 || x >= CHESS_NUMBER)
+    if (x < 0 || x >= Config::CHESS_NUMBER)
     {
         return false;
     }
-    if (y < 0 || y >= CHESS_NUMBER)
+    if (y < 0 || y >= Config::CHESS_NUMBER)
     {
         return false;
     }
@@ -79,9 +77,9 @@ bool Board::judgeIsPos(int x, int y) const
 std::vector<std::pair<int, int>> Board::winPieces() const
 {
     std::vector<std::pair<int, int>> pos;
-    for (int i = 0; i < CHESS_NUMBER; i++)
+    for (int i = 0; i < Config::CHESS_NUMBER; i++)
     {
-        for (int j = 0; j < CHESS_NUMBER; j++)
+        for (int j = 0; j < Config::CHESS_NUMBER; j++)
         {
             if (findOne(i, j, 1, 0, pos))
             {
@@ -118,10 +116,10 @@ bool Board::findOne(int x, int y, int dx, int dy, std::vector<std::pair<int, int
         mx += dx;
         my += dy;
     }
-    return pos.size() >= WIN_PIECE_NUMBER;
+    return pos.size() >= Config::WIN_PIECE_NUMBER;
 }
 
 bool Board::checkInBoard(int x, int y)
 {
-    return x >= 0 && x < CHESS_NUMBER && y >= 0 && y < CHESS_NUMBER;
+    return x >= 0 && x < Config::CHESS_NUMBER && y >= 0 && y < Config::CHESS_NUMBER;
 }
