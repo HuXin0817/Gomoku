@@ -54,14 +54,6 @@ This project is a simple implementation of the classic **Gomoku** game (also kno
 2. **Play the Game**: Click on any valid position on the board to place a piece. The game will alternate turns between the black and white players.
 3. **Winning the Game**: The game will display the winner once five pieces are aligned in a row.
 
-## Project Structure
-
-- **`CMakeLists.txt`**: The main build configuration file for CMake.
-- **`common.h`**: Contains shared constants and enumerations used across the project.
-- **`board.h`**: The `Board` class handles the game logic, including piece placement and win detection.
-- **`mainwindow.h`**: The `MainWindow` class handles the graphical interface, rendering the board and pieces, and handling user input.
-- **`main.cpp`**: The entry point of the application, where the Qt application is initialized and the main window is displayed.
-
 ## Contributing
 
 Contributions are welcome! If you have any ideas for improvements or new features, feel free to fork the repository and submit a pull request.

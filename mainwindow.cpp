@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     {
         for (int j = 0; j < CHESS_NUMBER; j++)
         {
-            widgets[i][j] = std::make_unique<Sensor>(this, &board, i, j);
+            widgets[i][j] = std::make_unique<Sensor>(this, &board, i, j, widgets);
             widgets[i][j]->move(transPosition(i) - BOARD_PIECE_SPACING / 2, transPosition(j) - BOARD_PIECE_SPACING / 2);
             widgets[i][j]->resize(BOARD_PIECE_SPACING, BOARD_PIECE_SPACING);
         }
@@ -40,32 +40,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 void MainWindow::paintEvent(QPaintEvent *event)
 {
     QMainWindow::paintEvent(event);
-
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(rect(), BackGroundColor);
-
     painter.setPen(QPen(LineColor, BOARD_LINE_WIDTH));
     for (auto &line : lines)
     {
         painter.drawLine(line);
     }
-
     painter.setBrush(LineColor);
     for (const auto &point : starPoints)
     {
         painter.drawEllipse(point, BOARD_STAR_POINT_WIDTH, BOARD_STAR_POINT_WIDTH);
-    }
-}
-
-void MainWindow::mousePressEvent(QMouseEvent *event)
-{
-    if (board.isGameOver())
-    {
-        auto pieces = board.winPieces();
-        for (auto [px, py] : pieces)
-        {
-            widgets[px][py]->flashing();
-        }
     }
 }

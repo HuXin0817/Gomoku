@@ -4,20 +4,20 @@ bool Board::checkLine(int x, int y, int dx, int dy) const
 {
     int count = 0;
     int cx = x, cy = y;
-    while (checkInBoard(cx, cy) && chessMap[cx][cy] == chessMap[x][y])
+    while (checkInBoard(x, y) && chessMap[cx][cy] == chessMap[x][y])
     {
         cx -= dx;
         cy -= dy;
         count++;
     }
     cx = x, cy = y;
-    while (checkInBoard(cx, cy) && chessMap[cx][cy] == chessMap[x][y])
+    while (checkInBoard(x, y) && chessMap[cx][cy] == chessMap[x][y])
     {
         cx += dx;
         cy += dy;
         count++;
     }
-    return count == WIN_PIECE_NUMBER + 1;
+    return count > WIN_PIECE_NUMBER;
 }
 
 bool Board::checkWin(int x, int y) const
@@ -70,7 +70,6 @@ bool Board::judgeIsPos(int x, int y) const
     {
         return false;
     }
-
     return true;
 }
 
@@ -106,8 +105,7 @@ bool Board::findOne(int x, int y, int dx, int dy, std::vector<std::pair<int, int
 {
     pos.clear();
     int mx = x, my = y;
-    auto player = chessMap[x][y];
-    if (player == ChessPlayer::NONE)
+    if (chessMap[x][y] == ChessPlayer::NONE)
     {
         return false;
     }
@@ -117,5 +115,5 @@ bool Board::findOne(int x, int y, int dx, int dy, std::vector<std::pair<int, int
         mx += dx;
         my += dy;
     }
-    return pos.size() == WIN_PIECE_NUMBER;
+    return pos.size() >= WIN_PIECE_NUMBER;
 }

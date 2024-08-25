@@ -15,12 +15,8 @@ class MainWindow final : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
 
-    ~MainWindow() override = default;
-
 protected:
     void paintEvent(QPaintEvent *event) override;
-
-    void mousePressEvent(QMouseEvent *event) override;
 
 private:
     Board board;
