@@ -17,7 +17,7 @@ public:
 
     void flashing(double midValue, int duration);
 
-    void handlePress();
+    void press();
 
     void unmark();
 

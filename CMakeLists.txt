@@ -14,12 +14,11 @@ find_package(Qt6 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(chess main.cpp
+add_executable(gomoku main.cpp
         mainwindow.cpp
         board.cpp
-        sensor.cpp
-        sensor.h)
-target_link_libraries(chess
+        sensor.cpp)
+target_link_libraries(gomoku
         Qt6::Core
         Qt6::Gui
         Qt6::Widgets

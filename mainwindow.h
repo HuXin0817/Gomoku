@@ -23,14 +23,14 @@ private:
     std::unique_ptr<Board> board;
     std::vector<std::vector<std::unique_ptr<Sensor>>> widgets;
 
-    static double transPos(int x) { return BOARD_MARGIN() + x * BOARD_PIECE_SPACING; }
+    static double transPos(int x);
 
     void reload(const std::vector<std::pair<int, int>> &moveRecord);
 
 private slots:
     void undo();
 
-    void restart() { reload({}); }
+    void restart();
 
     void addBoardSize();
 

@@ -120,3 +120,8 @@ bool Board::findOne(int x, int y, int dx, int dy, std::vector<std::pair<int, int
     }
     return pos.size() >= WIN_PIECE_NUMBER;
 }
+
+bool Board::checkInBoard(int x, int y)
+{
+    return x >= 0 && x < CHESS_NUMBER && y >= 0 && y < CHESS_NUMBER;
+}

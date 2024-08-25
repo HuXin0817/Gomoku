@@ -103,9 +103,11 @@ void MainWindow::paintEvent(QPaintEvent *event)
     }
 }
 
+void MainWindow::restart() { reload({}); }
+
 void MainWindow::undo()
 {
-    auto moveRecord = board->moveRecords;
+    auto moveRecord = board->getMoveRecords();
     moveRecord.pop_back();
     reload(moveRecord);
 }
@@ -113,7 +115,7 @@ void MainWindow::undo()
 void MainWindow::addBoardSize()
 {
     BOARD_PIECE_SPACING *= 1.1;
-    reload(board->moveRecords);
+    reload(board->getMoveRecords());
 }
 
 void MainWindow::reduceBoardSize()
@@ -121,14 +123,14 @@ void MainWindow::reduceBoardSize()
     if (BOARD_PIECE_SPACING / 1.1 > 30)
     {
         BOARD_PIECE_SPACING /= 1.1;
-        reload(board->moveRecords);
+        reload(board->getMoveRecords());
     }
 }
 
 void MainWindow::addChessNumber()
 {
     CHESS_NUMBER += 2;
-    reload(board->moveRecords);
+    reload(board->getMoveRecords());
 }
 
 void MainWindow::reduceChessNumber()
@@ -136,7 +138,7 @@ void MainWindow::reduceChessNumber()
     if (CHESS_NUMBER - 2 > 0)
     {
         CHESS_NUMBER -= 2;
-        reload(board->moveRecords);
+        reload(board->getMoveRecords());
     }
 }
 
@@ -154,7 +156,7 @@ void MainWindow::reload(const std::vector<std::pair<int, int>> &moveRecord)
     auto *mainWindow = new MainWindow();
     for (auto [x, y] : moveRecord)
     {
-        mainWindow->widgets[x][y]->handlePress();
+        mainWindow->widgets[x][y]->press();
     }
     mainWindow->move(oldPos);
     mainWindow->show();
@@ -176,4 +178,9 @@ void MainWindow::reduceChessWinNumber()
         Board::WIN_PIECE_NUMBER--;
         restart();
     }
+}
+
+double MainWindow::transPos(int x)
+{
+    return BOARD_MARGIN() + x * BOARD_PIECE_SPACING;
 }

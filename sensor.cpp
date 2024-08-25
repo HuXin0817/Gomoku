@@ -99,7 +99,7 @@ void Sensor::leaveEvent(QEvent *event)
 void Sensor::mousePressEvent(QMouseEvent *event)
 {
     QWidget::mousePressEvent(event);
-    handlePress();
+    press();
 }
 
 void Sensor::flashing(double midValue, int duration)
@@ -108,7 +108,6 @@ void Sensor::flashing(double midValue, int duration)
     animation.setKeyValueAt(0.0, 1.0);
     animation.setKeyValueAt(0.5, midValue);
     animation.setKeyValueAt(1.0, 1.0);
-
     animation.setEasingCurve(QEasingCurve::Linear);
     animation.setLoopCount(-1);
     animation.start();
@@ -120,7 +119,7 @@ void Sensor::unmark()
     update();
 }
 
-void Sensor::handlePress()
+void Sensor::press()
 {
     opacityEffect.setOpacity(1.0);
     if (isPressed)
@@ -133,9 +132,9 @@ void Sensor::handlePress()
     }
     isPressed = true;
     pressedPlayer = nowBoard->getNowPlayer();
-    if (!nowBoard->moveRecords.empty())
+    if (!nowBoard->getMoveRecords().empty())
     {
-        auto &lastPoint = nowBoard->moveRecords.back();
+        auto &lastPoint = nowBoard->getMoveRecords().back();
         (*widgets)[lastPoint.first][lastPoint.second]->unmark();
     }
     nowBoard->addPiece(x, y);
@@ -143,7 +142,7 @@ void Sensor::handlePress()
     if (!handledGameOver && nowBoard->isGameOver())
     {
         handledGameOver = true;
-        auto &lastPoint = nowBoard->moveRecords.back();
+        auto &lastPoint = nowBoard->getMoveRecords().back();
         (*widgets)[lastPoint.first][lastPoint.second]->unmark();
         auto pieces = nowBoard->winPieces();
         for (auto [px, py] : pieces)
