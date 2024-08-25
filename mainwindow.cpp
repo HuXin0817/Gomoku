@@ -1,8 +1,13 @@
 #include "mainwindow.h"
 
+#include <utility>
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     setFixedSize(BOARD_SIZE, BOARD_SIZE);
+    Sensor::lastPoint = std::pair<int, int>(-1, -1);
+    Sensor::handledGameOver = false;
+
     for (int i = 0; i < CHESS_NUMBER; i++)
     {
         for (int j = 0; j < CHESS_NUMBER; j++)

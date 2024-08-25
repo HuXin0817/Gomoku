@@ -1,7 +1,13 @@
 #include "sensor.h"
 
-std::pair<int, int> Sensor::lastPoint(-1, -1);
-bool Sensor::handledGameOver = false;
+std::pair<int, int> Sensor::lastPoint;
+bool Sensor::handledGameOver;
+
+Sensor::Sensor(QWidget *parent, Board *nowBoard, int x, int y, std::unique_ptr<Sensor> (*widgets)[15])
+    : QWidget(parent), x(x), y(y), nowBoard(nowBoard), widgets(widgets), opacityEffect(this), animation(&opacityEffect, "opacity", this)
+{
+    setGraphicsEffect(&opacityEffect);
+}
 
 void Sensor::paintEvent(QPaintEvent *event)
 {
@@ -10,7 +16,6 @@ void Sensor::paintEvent(QPaintEvent *event)
     {
         return;
     }
-
     QPainter painter(this);
     ChessPlayer player;
     if (isMouseOn)
@@ -86,8 +91,8 @@ void Sensor::leaveEvent(QEvent *event)
     isMouseOn = false;
     if (!nowBoard->isGameOver())
     {
-        stopFlashing();
-        opacityEffect->setOpacity(1);
+        animation.stop();
+        opacityEffect.setOpacity(1);
     }
     update();
 }
@@ -95,6 +100,29 @@ void Sensor::leaveEvent(QEvent *event)
 void Sensor::mousePressEvent(QMouseEvent *event)
 {
     QWidget::mousePressEvent(event);
+    handlePress();
+}
+
+void Sensor::flashing(double midValue, int duration)
+{
+    animation.setDuration(duration);
+    animation.setKeyValueAt(0.0, 1.0);
+    animation.setKeyValueAt(0.5, midValue);
+    animation.setKeyValueAt(1.0, 1.0);
+
+    animation.setEasingCurve(QEasingCurve::Linear);
+    animation.setLoopCount(-1);
+    animation.start();
+}
+
+void Sensor::unmark()
+{
+    markBox = false;
+    update();
+}
+
+void Sensor::handlePress()
+{
     if (isPressed)
     {
         return;
@@ -122,24 +150,5 @@ void Sensor::mousePressEvent(QMouseEvent *event)
             widgets[px][py]->flashing(0.3, 1500);
         }
     }
-    update();
-}
-
-void Sensor::flashing(double midValue, int duration)
-{
-    animation = std::make_unique<QPropertyAnimation>(opacityEffect.get(), "opacity", this);
-    animation->setDuration(duration);
-    animation->setKeyValueAt(0.0, 1.0);
-    animation->setKeyValueAt(0.5, midValue);
-    animation->setKeyValueAt(1.0, 1.0);
-
-    animation->setEasingCurve(QEasingCurve::Linear);
-    animation->setLoopCount(-1);
-    animation->start();
-}
-
-void Sensor::unmark()
-{
-    markBox = false;
     update();
 }
