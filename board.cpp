@@ -1,6 +1,6 @@
 #include "board.h"
 
-bool Board::checkLine(int x, int y, int dx, int dy)
+bool Board::checkLine(int x, int y, int dx, int dy) const
 {
     int count = 0;
     int cx = x, cy = y;
@@ -20,7 +20,7 @@ bool Board::checkLine(int x, int y, int dx, int dy)
     return count == WIN_PIECE_NUMBER + 1;
 }
 
-bool Board::checkWin(int x, int y)
+bool Board::checkWin(int x, int y) const
 {
     if (checkLine(x, y, 1, 0))
     {
@@ -43,23 +43,79 @@ bool Board::checkWin(int x, int y)
 
 void Board::addPiece(int x, int y)
 {
-    if (isGameOver)
-    {
-        return;
-    }
-    if (x < 0 || x >= CHESS_NUMBER)
-    {
-        return;
-    }
-    if (y < 0 || y >= CHESS_NUMBER)
-    {
-        return;
-    }
-    if (chessMap[x][y] != ChessPlayer::NONE)
+    if (!judgeIsPos(x, y))
     {
         return;
     }
     chessMap[x][y] = nowPlayer;
     nowPlayer = nowPlayer == ChessPlayer::BLACK ? ChessPlayer::WRITE : ChessPlayer::BLACK;
-    isGameOver = checkWin(x, y);
+    gameOver = checkWin(x, y);
+}
+
+bool Board::judgeIsPos(int x, int y) const
+{
+    if (gameOver)
+    {
+        return false;
+    }
+    if (x < 0 || x >= CHESS_NUMBER)
+    {
+        return false;
+    }
+    if (y < 0 || y >= CHESS_NUMBER)
+    {
+        return false;
+    }
+    if (chessMap[x][y] != ChessPlayer::NONE)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+std::vector<std::pair<int, int>> Board::winPieces() const
+{
+    std::vector<std::pair<int, int>> pos;
+    for (int i = 0; i < CHESS_NUMBER; i++)
+    {
+        for (int j = 0; j < CHESS_NUMBER; j++)
+        {
+            if (findOne(i, j, 1, 0, pos))
+            {
+                return pos;
+            }
+            if (findOne(i, j, 1, 1, pos))
+            {
+                return pos;
+            }
+            if (findOne(i, j, 1, -1, pos))
+            {
+                return pos;
+            }
+            if (findOne(i, j, 0, 1, pos))
+            {
+                return pos;
+            }
+        }
+    }
+    return {};
+}
+
+bool Board::findOne(int x, int y, int dx, int dy, std::vector<std::pair<int, int>> &pos) const
+{
+    pos.clear();
+    int mx = x, my = y;
+    auto player = chessMap[x][y];
+    if (player == ChessPlayer::NONE)
+    {
+        return false;
+    }
+    while (checkInBoard(mx, my) && chessMap[mx][my] == chessMap[x][y])
+    {
+        pos.emplace_back(mx, my);
+        mx += dx;
+        my += dy;
+    }
+    return pos.size() == WIN_PIECE_NUMBER;
 }

@@ -16,7 +16,9 @@ find_package(Qt6 COMPONENTS
 
 add_executable(chess main.cpp
         mainwindow.cpp
-        board.cpp)
+        board.cpp
+        sensor.cpp
+        sensor.h)
 target_link_libraries(chess
         Qt6::Core
         Qt6::Gui
