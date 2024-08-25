@@ -25,14 +25,14 @@ private:
     std::vector<QPointF> starPoints;
     std::vector<std::vector<Sensor *>> widgets;
 
-    static double transPosition(int x) { return BOARD_MARGIN() + x * BOARD_PIECE_SPACING; }
+    static double transPos(int x) { return BOARD_MARGIN() + x * BOARD_PIECE_SPACING; }
 
     void reload(const std::vector<std::pair<int, int>> &moveRecord);
 
 private slots:
     void undo();
 
-    void restart();
+    void restart() { reload({}); }
 
     void addBoardSize();
 

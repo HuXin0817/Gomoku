@@ -12,20 +12,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), widgets(std::vect
         {
             if (i + 1 < CHESS_NUMBER)
             {
-                lines.emplace_back(transPosition(i), transPosition(j), transPosition(i + 1), transPosition(j));
+                lines.emplace_back(transPos(i), transPos(j), transPos(i + 1), transPos(j));
             }
             if (j + 1 < CHESS_NUMBER)
             {
-                lines.emplace_back(transPosition(i), transPosition(j), transPosition(i), transPosition(j + 1));
+                lines.emplace_back(transPos(i), transPos(j), transPos(i), transPos(j + 1));
             }
         }
     }
 
-    for (int i : StarPositions())
+    auto starPositions = StarPositions();
+    for (int i : starPositions)
     {
-        for (int j : StarPositions())
+        for (int j : starPositions)
         {
-            starPoints.emplace_back(transPosition(i), transPosition(j));
+            starPoints.emplace_back(transPos(i), transPos(j));
         }
     }
 
@@ -34,8 +35,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), widgets(std::vect
         for (int j = 0; j < CHESS_NUMBER; j++)
         {
             widgets[i][j] = new Sensor(this, &board, i, j, &widgets);
-            widgets[i][j]->move(transPosition(i) - BOARD_PIECE_SPACING / 2, transPosition(j) - BOARD_PIECE_SPACING / 2);
-            widgets[i][j]->resize(BOARD_PIECE_SPACING, BOARD_PIECE_SPACING);
+            int mx = static_cast<int>((transPos(i) - BOARD_PIECE_SPACING / 2));
+            int my = static_cast<int>((transPos(j) - BOARD_PIECE_SPACING / 2));
+            widgets[i][j]->move(mx, my);
+            int space = static_cast<int>(BOARD_PIECE_SPACING);
+            widgets[i][j]->resize(space, space);
         }
     }
 
@@ -68,9 +72,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), widgets(std::vect
     gameControlMenu->addAction(reduceChessNumberAction);
     gameControlMenu->addAction(addChessWinNumberAction);
     gameControlMenu->addAction(reduceChessWinNumberAction);
-
     menuBar->addMenu(gameControlMenu);
     setMenuBar(menuBar);
+
     connect(restartAction, &QAction::triggered, this, &MainWindow::restart);
     connect(undoAction, &QAction::triggered, this, &MainWindow::undo);
     connect(addBoardSizeAction, &QAction::triggered, this, &MainWindow::addBoardSize);
@@ -104,11 +108,6 @@ void MainWindow::undo()
     auto moveRecord = board.moveRecords;
     moveRecord.pop_back();
     reload(moveRecord);
-}
-
-void MainWindow::restart()
-{
-    reload({});
 }
 
 void MainWindow::addBoardSize()
