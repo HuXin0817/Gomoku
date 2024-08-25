@@ -4,15 +4,16 @@
 #include <QPainter>
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>
-#include <utility>
 
 #include "board.h"
 #include "common.h"
 
 class Sensor final : public QWidget
 {
+    Q_OBJECT
+
 public:
-    Sensor(QWidget *parent, Board *nowBoard, int x, int y, std::unique_ptr<Sensor> (*widgets)[CHESS_NUMBER]);
+    Sensor(QWidget *parent, Board *nowBoard, int x, int y, std::vector<std::vector<Sensor *>> *widgets);
 
     void flashing(double midValue, int duration);
 
@@ -21,7 +22,6 @@ public:
     void unmark();
 
     static bool handledGameOver;
-    static std::pair<int, int> lastPoint;
 
 protected:
     void enterEvent(QEnterEvent *event) override;
@@ -40,7 +40,7 @@ private:
     bool markBox = false;
     ChessPlayer pressedPlayer = ChessPlayer::NONE;
     Board *nowBoard;
-    std::unique_ptr<Sensor> (*widgets)[CHESS_NUMBER];
+    std::vector<std::vector<Sensor *>> *widgets;
     QGraphicsOpacityEffect opacityEffect;
     QPropertyAnimation animation;
 };

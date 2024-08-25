@@ -3,6 +3,7 @@
 #include <QMainWindow>
 #include <QPainter>
 #include <QMouseEvent>
+#include <QMenuBar>
 
 #include "common.h"
 #include "board.h"
@@ -22,7 +23,27 @@ private:
     Board board;
     std::vector<QLine> lines;
     std::vector<QPoint> starPoints;
-    std::unique_ptr<Sensor> widgets[CHESS_NUMBER][CHESS_NUMBER];
+    std::vector<std::vector<Sensor *>> widgets;
+    bool over = false;
 
-    static int transPosition(int x) { return BOARD_MARGIN + x * BOARD_PIECE_SPACING; }
+    static double transPosition(int x) { return BOARD_MARGIN() + x * BOARD_PIECE_SPACING; }
+
+    void reload(const std::vector<std::pair<int, int>> &moveRecord);
+
+private slots:
+    void undo();
+
+    void restart();
+
+    void addBoardSize();
+
+    void reduceBoardSize();
+
+    void addChessNumber();
+
+    void reduceChessNumber();
+
+    void addChessWinNumber();
+
+    void reduceChessWinNumber();
 };

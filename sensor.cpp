@@ -1,9 +1,8 @@
 #include "sensor.h"
 
-std::pair<int, int> Sensor::lastPoint;
 bool Sensor::handledGameOver;
 
-Sensor::Sensor(QWidget *parent, Board *nowBoard, int x, int y, std::unique_ptr<Sensor> (*widgets)[15])
+Sensor::Sensor(QWidget *parent, Board *nowBoard, int x, int y, std::vector<std::vector<Sensor *>> *widgets)
     : QWidget(parent), x(x), y(y), nowBoard(nowBoard), widgets(widgets), opacityEffect(this), animation(&opacityEffect, "opacity", this)
 {
     setGraphicsEffect(&opacityEffect);
@@ -40,24 +39,24 @@ void Sensor::paintEvent(QPaintEvent *event)
     case ChessPlayer::BLACK:
     {
         painter.setBrush(LineColor);
-        painter.drawEllipse(shadowPoint, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
-        QRadialGradient gradient(point.x(), point.y(), BOARD_PIECE_WIDTH);
+        painter.drawEllipse(shadowPoint, static_cast<int>(BOARD_PIECE_WIDTH()), static_cast<int>(BOARD_PIECE_WIDTH()));
+        QRadialGradient gradient(point.x(), point.y(), BOARD_PIECE_WIDTH());
         gradient.setColorAt(0, BlackMidPieceColor);
         gradient.setColorAt(1, BlackFringePieceColor);
         painter.setBrush(gradient);
-        painter.drawEllipse(point, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
+        painter.drawEllipse(point, static_cast<int>(BOARD_PIECE_WIDTH()), static_cast<int>(BOARD_PIECE_WIDTH()));
         break;
     }
     case ChessPlayer::WRITE:
     {
         painter.setBrush(LineColor);
-        painter.drawEllipse(shadowPoint, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
-        QRadialGradient gradient(point.x(), point.y(), BOARD_PIECE_WIDTH);
+        painter.drawEllipse(shadowPoint, static_cast<int>(BOARD_PIECE_WIDTH()), static_cast<int>(BOARD_PIECE_WIDTH()));
+        QRadialGradient gradient(point.x(), point.y(), BOARD_PIECE_WIDTH());
         gradient.setColorAt(0, WriteMidPieceColor);
         gradient.setColorAt(1, WriteFringePieceColor);
         painter.setPen(QPen(WriteEdgePieceColor, 0));
         painter.setBrush(gradient);
-        painter.drawEllipse(point, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
+        painter.drawEllipse(point, static_cast<int>(BOARD_PIECE_WIDTH()), static_cast<int>(BOARD_PIECE_WIDTH()));
         painter.setPen(QPen(LineColor, 0));
         break;
     }
@@ -65,7 +64,7 @@ void Sensor::paintEvent(QPaintEvent *event)
     if (markBox)
     {
         painter.setBrush(LineColor);
-        painter.drawEllipse(point, BOARD_STAR_POINT_WIDTH, BOARD_STAR_POINT_WIDTH);
+        painter.drawEllipse(point, static_cast<int>(BOARD_STAR_POINT_WIDTH()), static_cast<int>(BOARD_STAR_POINT_WIDTH()));
     }
 }
 
@@ -123,6 +122,7 @@ void Sensor::unmark()
 
 void Sensor::handlePress()
 {
+    opacityEffect.setOpacity(1.0);
     if (isPressed)
     {
         return;
@@ -133,21 +133,22 @@ void Sensor::handlePress()
     }
     isPressed = true;
     pressedPlayer = nowBoard->getNowPlayer();
-    nowBoard->addPiece(x, y);
-    if (lastPoint.first != -1 && lastPoint.second != -1)
+    if (!nowBoard->moveRecords.empty())
     {
-        widgets[lastPoint.first][lastPoint.second]->unmark();
+        auto &lastPoint = nowBoard->moveRecords.back();
+        (*widgets)[lastPoint.first][lastPoint.second]->unmark();
     }
-    lastPoint = {x, y};
+    nowBoard->addPiece(x, y);
     markBox = true;
     if (!handledGameOver && nowBoard->isGameOver())
     {
         handledGameOver = true;
-        widgets[lastPoint.first][lastPoint.second]->unmark();
+        auto &lastPoint = nowBoard->moveRecords.back();
+        (*widgets)[lastPoint.first][lastPoint.second]->unmark();
         auto pieces = nowBoard->winPieces();
         for (auto [px, py] : pieces)
         {
-            widgets[px][py]->flashing(0.3, 1500);
+            (*widgets)[px][py]->flashing(0.3, 1500);
         }
     }
     update();

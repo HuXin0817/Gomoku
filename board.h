@@ -5,6 +5,10 @@
 class Board
 {
 public:
+    static int WIN_PIECE_NUMBER;
+
+    Board() : chessMap(CHESS_NUMBER, std::vector<ChessPlayer>(CHESS_NUMBER)) {}
+
     void addPiece(int x, int y);
 
     bool judgeIsPos(int x, int y) const;
@@ -15,10 +19,12 @@ public:
 
     std::vector<std::pair<int, int>> winPieces() const;
 
+    std::vector<std::pair<int, int>> moveRecords;
+
 private:
     bool gameOver = false;
     ChessPlayer nowPlayer = ChessPlayer::BLACK;
-    ChessPlayer chessMap[CHESS_NUMBER][CHESS_NUMBER]{};
+    std::vector<std::vector<ChessPlayer>> chessMap;
 
     bool checkWin(int x, int y) const;
 

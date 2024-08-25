@@ -1,5 +1,7 @@
 #include "board.h"
 
+int Board::WIN_PIECE_NUMBER = 5;
+
 bool Board::checkLine(int x, int y, int dx, int dy) const
 {
     int count = 0;
@@ -48,6 +50,7 @@ void Board::addPiece(int x, int y)
         return;
     }
     chessMap[x][y] = nowPlayer;
+    moveRecords.emplace_back(x, y);
     nowPlayer = nowPlayer == ChessPlayer::BLACK ? ChessPlayer::WRITE : ChessPlayer::BLACK;
     gameOver = checkWin(x, y);
 }
