@@ -31,8 +31,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), widgets(Config::C
     auto *reduceBoardSizeShortcut = new QShortcut(QKeySequence("Ctrl+Down"), this);
     auto *addChessNumberShortcut = new QShortcut(QKeySequence("Ctrl+Right"), this);
     auto *reduceChessNumberShortcut = new QShortcut(QKeySequence("Ctrl+Left"), this);
-    auto *addChessWinNumberShortcut = new QShortcut(QKeySequence("Ctrl+Shift+Right"), this);
-    auto *reduceChessWinNumberShortcut = new QShortcut(QKeySequence("Ctrl+Shift+Left"), this);
 
     connect(restartShortcut, &QShortcut::activated, this, &MainWindow::restart);
     connect(undoShortcut, &QShortcut::activated, this, &MainWindow::undo);
@@ -40,8 +38,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), widgets(Config::C
     connect(reduceBoardSizeShortcut, &QShortcut::activated, this, &MainWindow::reduceBoardSize);
     connect(addChessNumberShortcut, &QShortcut::activated, this, &MainWindow::addChessNumber);
     connect(reduceChessNumberShortcut, &QShortcut::activated, this, &MainWindow::reduceChessNumber);
-    connect(addChessWinNumberShortcut, &QShortcut::activated, this, &MainWindow::addChessWinNumber);
-    connect(reduceChessWinNumberShortcut, &QShortcut::activated, this, &MainWindow::reduceChessWinNumber);
 }
 
 void MainWindow::paintEvent(QPaintEvent *event)
@@ -123,7 +119,7 @@ void MainWindow::reduceChessNumber()
     }
 }
 
-void MainWindow::reload(const std::vector<std::pair<int, int>> &moveRecord)
+void MainWindow::reload(const std::vector<point> &moveRecord)
 {
     auto oldPos = pos();
     for (auto &widget : widgets)
@@ -145,24 +141,6 @@ void MainWindow::reload(const std::vector<std::pair<int, int>> &moveRecord)
     }
     mainWindow->move(oldPos);
     mainWindow->show();
-}
-
-void MainWindow::addChessWinNumber()
-{
-    if (Config::WIN_PIECE_NUMBER + 1 <= Config::CHESS_NUMBER)
-    {
-        Config::WIN_PIECE_NUMBER++;
-        restart();
-    }
-}
-
-void MainWindow::reduceChessWinNumber()
-{
-    if (Config::WIN_PIECE_NUMBER - 1 > 1)
-    {
-        Config::WIN_PIECE_NUMBER--;
-        restart();
-    }
 }
 
 double MainWindow::transPos(int x)

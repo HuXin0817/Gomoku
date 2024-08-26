@@ -19,3 +19,22 @@ std::vector<int> Config::StarPositions()
         return {CHESS_NUMBER / 2};
     }
 }
+
+bool point::operator==(const point &other) const
+{
+    return x == other.x && y == other.y;
+}
+
+bool point::operator<(const point &other) const
+{
+    if (x != other.x)
+    {
+        return x < other.x;
+    }
+    return y < other.y;
+}
+
+std::size_t std::hash<point>::operator()(const point &p) const
+{
+    return std::hash<int>()(p.x) ^ (std::hash<int>()(p.y) << 1);
+}

@@ -19,8 +19,15 @@ void Sensor::paintEvent(QPaintEvent *event)
     ChessPlayer player;
     if (isMouseOn)
     {
-        painter.setOpacity(0.9);
         player = nowBoard->getNowPlayer();
+        if (player == ChessPlayer::BLACK)
+        {
+            painter.setOpacity(0.6);
+        }
+        else
+        {
+            painter.setOpacity(0.7);
+        }
     }
     if (isPressed)
     {
@@ -40,7 +47,7 @@ void Sensor::paintEvent(QPaintEvent *event)
     {
         painter.setBrush(LineColor);
         painter.drawEllipse(shadowPoint, Config::BOARD_PIECE_WIDTH(), Config::BOARD_PIECE_WIDTH());
-        QRadialGradient gradient(point.x(), point.y(), Config::BOARD_PIECE_WIDTH());
+        QRadialGradient gradient(point, Config::BOARD_PIECE_WIDTH());
         gradient.setColorAt(0, BlackMidPieceColor);
         gradient.setColorAt(1, BlackFringePieceColor);
         painter.setBrush(gradient);
@@ -51,7 +58,7 @@ void Sensor::paintEvent(QPaintEvent *event)
     {
         painter.setBrush(LineColor);
         painter.drawEllipse(shadowPoint, Config::BOARD_PIECE_WIDTH(), Config::BOARD_PIECE_WIDTH());
-        QRadialGradient gradient(point.x(), point.y(), Config::BOARD_PIECE_WIDTH());
+        QRadialGradient gradient(point, Config::BOARD_PIECE_WIDTH());
         gradient.setColorAt(0, WriteMidPieceColor);
         gradient.setColorAt(1, WriteFringePieceColor);
         painter.setPen(QPen(WriteEdgePieceColor, 0));
@@ -75,7 +82,6 @@ void Sensor::enterEvent(QEnterEvent *event)
         return;
     }
     isMouseOn = true;
-    flashing(0.7, 2500);
     update();
 }
 
@@ -85,7 +91,6 @@ void Sensor::leaveEvent(QEvent *event)
     isMouseOn = false;
     if (!nowBoard->isGameOver())
     {
-        animation.stop();
         opacityEffect.setOpacity(1);
     }
     update();
@@ -110,8 +115,10 @@ void Sensor::flashing(double midValue, int duration)
 
 void Sensor::press()
 {
-    animation.stop();
-    opacityEffect.setOpacity(1.0);
+    if (nowBoard->isGameOver())
+    {
+        return;
+    }
     if (isPressed)
     {
         return;
@@ -121,6 +128,16 @@ void Sensor::press()
         return;
     }
     isPressed = true;
+    for (auto &widget : *widgets)
+    {
+        for (auto &w : widget)
+        {
+            w->stopFlashing();
+            w->opacityEffect.setOpacity(1);
+            w->isMouseOn = false;
+            w->update();
+        }
+    }
     pressedPlayer = nowBoard->getNowPlayer();
     nowBoard->addPiece(x, y);
     if (!handledGameOver && nowBoard->isGameOver())
@@ -129,8 +146,10 @@ void Sensor::press()
         auto pieces = nowBoard->winPieces();
         for (auto [px, py] : pieces)
         {
-            (*widgets)[px][py]->flashing(0.3, 1500);
+            (*widgets)[px][py]->flashing(0.4, 1500);
         }
+        update();
+        return;
     }
     update();
 }

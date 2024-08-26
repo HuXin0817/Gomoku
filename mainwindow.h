@@ -25,7 +25,7 @@ private:
 
     static double transPos(int x);
 
-    void reload(const std::vector<std::pair<int, int>> &moveRecord);
+    void reload(const std::vector<point> &moveRecord);
 
 private slots:
     void undo();
@@ -39,8 +39,4 @@ private slots:
     void addChessNumber();
 
     void reduceChessNumber();
-
-    void addChessWinNumber();
-
-    void reduceChessWinNumber();
 };

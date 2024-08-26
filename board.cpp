@@ -74,9 +74,9 @@ bool Board::judgeIsPos(int x, int y) const
     return true;
 }
 
-std::vector<std::pair<int, int>> Board::winPieces() const
+std::vector<point> Board::winPieces() const
 {
-    std::vector<std::pair<int, int>> pos;
+    std::vector<point> pos;
     for (int i = 0; i < Config::CHESS_NUMBER; i++)
     {
         for (int j = 0; j < Config::CHESS_NUMBER; j++)
@@ -102,7 +102,7 @@ std::vector<std::pair<int, int>> Board::winPieces() const
     return {};
 }
 
-bool Board::findOne(int x, int y, int dx, int dy, std::vector<std::pair<int, int>> &pos) const
+bool Board::findOne(int x, int y, int dx, int dy, std::vector<point> &pos) const
 {
     pos.clear();
     int mx = x, my = y;

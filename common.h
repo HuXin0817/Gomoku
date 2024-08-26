@@ -2,6 +2,24 @@
 
 #include <QColor>
 
+struct point
+{
+    int x;
+    int y;
+
+    point(int x, int y) : x(x), y(y) {}
+
+    bool operator==(const point &other) const;
+
+    bool operator<(const point &other) const;
+};
+
+template <>
+struct std::hash<point>
+{
+    std::size_t operator()(const point &p) const;
+};
+
 struct Config
 {
     static int CHESS_NUMBER;

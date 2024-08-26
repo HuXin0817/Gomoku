@@ -17,6 +17,8 @@ public:
 
     void flashing(double midValue, int duration);
 
+    void stopFlashing() { animation.stop(); }
+
     void press();
 
     static bool handledGameOver;
