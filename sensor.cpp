@@ -145,8 +145,6 @@ void Sensor::press()
         {
             (*widgets)[px][py]->flashing(0.4, 1500);
         }
-        update();
-        return;
     }
     update();
 }
