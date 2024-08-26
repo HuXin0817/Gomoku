@@ -21,8 +21,6 @@ public:
 
     void press();
 
-    static bool handledGameOver;
-
 protected:
     void enterEvent(QEnterEvent *event) override;
 

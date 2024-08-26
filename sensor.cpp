@@ -1,7 +1,5 @@
 #include "sensor.h"
 
-bool Sensor::handledGameOver;
-
 Sensor::Sensor(QWidget *parent, Board *nowBoard, int x, int y, std::vector<std::vector<std::unique_ptr<Sensor>>> *widgets)
     : QWidget(parent), x(x), y(y), nowBoard(nowBoard), widgets(widgets), opacityEffect(this), animation(&opacityEffect, "opacity", this)
 {
@@ -140,10 +138,9 @@ void Sensor::press()
     }
     pressedPlayer = nowBoard->getNowPlayer();
     nowBoard->addPiece(x, y);
-    if (!handledGameOver && nowBoard->isGameOver())
+    if (nowBoard->isGameOver())
     {
-        handledGameOver = true;
-        auto pieces = nowBoard->winPieces();
+        std::vector<point> pieces = nowBoard->winPieces();
         for (auto [px, py] : pieces)
         {
             (*widgets)[px][py]->flashing(0.4, 1500);

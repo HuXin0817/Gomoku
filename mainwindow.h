@@ -19,13 +19,17 @@ public:
 protected:
     void paintEvent(QPaintEvent *event) override;
 
+    void resizeEvent(QResizeEvent *event) override;
+
 private:
     std::unique_ptr<Board> board;
     std::vector<std::vector<std::unique_ptr<Sensor>>> widgets;
 
-    static double transPos(int x);
-
     void reload(const std::vector<point> &moveRecord);
+
+    void reset();
+
+    void moveWidgets();
 
 private slots:
     void undo();
@@ -39,4 +43,8 @@ private slots:
     void addChessNumber();
 
     void reduceChessNumber();
+
+    void addWindowSize();
+
+    void reduceWindowSize();
 };
