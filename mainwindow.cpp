@@ -11,8 +11,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     auto *reduceBoardSizeShortcut = new QShortcut(QKeySequence("Ctrl+Down"), this);
     auto *addChessNumberShortcut = new QShortcut(QKeySequence("Ctrl+Right"), this);
     auto *reduceChessNumberShortcut = new QShortcut(QKeySequence("Ctrl+Left"), this);
-    auto *addWindowSizeShortcut = new QShortcut(QKeySequence("Ctrl+="), this);
-    auto *reduceWindowSizeShortcut = new QShortcut(QKeySequence("Ctrl+-"), this);
 
     connect(restartShortcut, &QShortcut::activated, this, &MainWindow::restart);
     connect(undoShortcut, &QShortcut::activated, this, &MainWindow::undo);
@@ -20,26 +18,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(reduceBoardSizeShortcut, &QShortcut::activated, this, &MainWindow::reduceBoardSize);
     connect(addChessNumberShortcut, &QShortcut::activated, this, &MainWindow::addChessNumber);
     connect(reduceChessNumberShortcut, &QShortcut::activated, this, &MainWindow::reduceChessNumber);
-    connect(addWindowSizeShortcut, &QShortcut::activated, this, &MainWindow::addWindowSize);
-    connect(reduceWindowSizeShortcut, &QShortcut::activated, this, &MainWindow::reduceWindowSize);
 }
 
 void MainWindow::paintEvent(QPaintEvent *event)
 {
-    QSize newSize = size();
-    int midX = newSize.width() / 2;
-    int midY = newSize.height() / 2;
+    double width = size().width();
+    double height = size().height();
+    double midX = width / 2;
+    double midY = height / 2;
     QMainWindow::paintEvent(event);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(rect(), BackGroundColor);
     painter.setPen(QPen(LineColor, Config::BOARD_LINE_WIDTH()));
-    for (int i = 0; i < Config::CHESS_NUMBER; i++)
+    for (double i = 0; i < Config::CHESS_NUMBER; i++)
     {
-        for (int j = 0; j < Config::CHESS_NUMBER; j++)
+        for (double j = 0; j < Config::CHESS_NUMBER; j++)
         {
-            double x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING;
-            double y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING;
+            double x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING + Config::BOARD_PIECE_SPACING / 2;
+            double y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING + Config::BOARD_PIECE_SPACING / 2;
             QPointF point1(x, y);
             if (i + 1 < Config::CHESS_NUMBER)
             {
@@ -55,12 +52,12 @@ void MainWindow::paintEvent(QPaintEvent *event)
     }
     painter.setBrush(LineColor);
     auto starPositions = Config::StarPositions();
-    for (int i : starPositions)
+    for (double i : starPositions)
     {
-        for (int j : starPositions)
+        for (double j : starPositions)
         {
-            double x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING;
-            double y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING;
+            double x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING + Config::BOARD_PIECE_SPACING / 2;
+            double y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING + Config::BOARD_PIECE_SPACING / 2;
             QPointF point(x, y);
             painter.drawEllipse(point, Config::BOARD_STAR_POINT_WIDTH(), Config::BOARD_STAR_POINT_WIDTH());
         }
@@ -83,6 +80,11 @@ void MainWindow::undo()
 void MainWindow::addBoardSize()
 {
     Config::BOARD_PIECE_SPACING *= 1.1;
+    if (Config::BOARD_SIZE() > getMinWindowSize())
+    {
+        Config::BOARD_PIECE_SPACING /= 1.1;
+        return;
+    }
     reload(board->getMoveRecords());
 }
 
@@ -103,7 +105,12 @@ void MainWindow::reduceBoardSize()
 void MainWindow::addChessNumber()
 {
     Config::CHESS_NUMBER += 2;
-    reload(board->getMoveRecords());
+    if (Config::BOARD_SIZE() > getMinWindowSize())
+    {
+        Config::CHESS_NUMBER -= 2;
+        return;
+    }
+    reload(centerPieces());
 }
 
 void MainWindow::reduceChessNumber()
@@ -111,7 +118,16 @@ void MainWindow::reduceChessNumber()
     if (Config::CHESS_NUMBER - 2 > 0)
     {
         Config::CHESS_NUMBER -= 2;
-        reload(board->getMoveRecords());
+        auto moves = centerPieces();
+        for (auto [x, y] : moves)
+        {
+            if (x >= Config::CHESS_NUMBER || y >= Config::CHESS_NUMBER)
+            {
+                Config::CHESS_NUMBER += 2;
+                return;
+            }
+        }
+        reload(moves);
     }
 }
 
@@ -126,20 +142,6 @@ void MainWindow::reload(const std::vector<point> &moveRecord)
         }
     }
     update();
-}
-
-void MainWindow::addWindowSize()
-{
-    int width = size().width() * 1.1;
-    int height = size().height() * 1.1;
-    resize(width, height);
-}
-
-void MainWindow::reduceWindowSize()
-{
-    int width = size().width() / 1.1;
-    int height = size().height() / 1.1;
-    resize(width, height);
 }
 
 void MainWindow::reset()
@@ -161,21 +163,27 @@ void MainWindow::reset()
     moveWidgets();
     int minBoardSize = Config::BOARD_SIZE();
     setMinimumSize(minBoardSize, minBoardSize);
+    if (!isFullScreen())
+    {
+        resize(minBoardSize, minBoardSize);
+    }
     show();
 }
 
 void MainWindow::moveWidgets()
 {
-    int midX = size().width() / 2;
-    int midY = size().height() / 2;
-    for (int i = 0; i < Config::CHESS_NUMBER; i++)
+    double width = size().width();
+    double height = size().height();
+    double midX = width / 2;
+    double midY = height / 2;
+    for (double i = 0; i < Config::CHESS_NUMBER; i++)
     {
-        for (int j = 0; j < Config::CHESS_NUMBER; j++)
+        for (double j = 0; j < Config::CHESS_NUMBER; j++)
         {
-            int x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING - Config::BOARD_PIECE_SPACING / 2;
-            int y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING - Config::BOARD_PIECE_SPACING / 2;
+            double x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING;
+            double y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING;
             widgets[i][j]->move(x, y);
-            int space = Config::BOARD_PIECE_SPACING;
+            double space = Config::BOARD_PIECE_SPACING;
             widgets[i][j]->setFixedSize(space, space);
             widgets[i][j]->show();
         }
@@ -186,4 +194,36 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
     moveWidgets();
+}
+
+std::vector<point> MainWindow::centerPieces() const
+{
+    int maxX = 0;
+    int maxY = 0;
+    int minX = Config::CHESS_NUMBER;
+    int minY = Config::CHESS_NUMBER;
+    auto moveRecords = board->getMoveRecords();
+    for (auto [x, y] : moveRecords)
+    {
+        maxX = std::max(x, maxX);
+        maxY = std::max(y, maxY);
+        minX = std::min(x, minX);
+        minY = std::min(x, minY);
+    }
+    for (auto &[x, y] : moveRecords)
+    {
+        x = x + (Config::CHESS_NUMBER - maxX - minX) / 2;
+        y = y + (Config::CHESS_NUMBER - maxY - minY) / 2;
+    }
+    return moveRecords;
+}
+
+int MainWindow::getMinWindowSize() const
+{
+    QScreen *screen = QGuiApplication::primaryScreen();
+    QRect screenGeometry = screen->geometry();
+    int screenWidth = screenGeometry.width();
+    int screenHeight = screenGeometry.height();
+    int minSize = std::min(screenHeight, screenWidth);
+    return minSize - 50;
 }

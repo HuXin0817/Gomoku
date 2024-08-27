@@ -31,6 +31,10 @@ private:
 
     void moveWidgets();
 
+    std::vector<point> centerPieces() const;
+
+    int getMinWindowSize() const;
+
 private slots:
     void undo();
 
@@ -43,8 +47,4 @@ private slots:
     void addChessNumber();
 
     void reduceChessNumber();
-
-    void addWindowSize();
-
-    void reduceWindowSize();
 };

@@ -1,22 +1,19 @@
 #include "common.h"
 
 int Config::WIN_PIECE_NUMBER = 5;
-int Config::CHESS_NUMBER = 15;
+double Config::CHESS_NUMBER = 15;
 double Config::BOARD_PIECE_SPACING = 36.0;
 
-std::vector<int> Config::StarPositions()
+std::vector<double> Config::StarPositions()
 {
-    if (CHESS_NUMBER > 11)
+    double starPos = int(CHESS_NUMBER / 5);
+    if (starPos < 2)
     {
-        return {3, CHESS_NUMBER / 2, CHESS_NUMBER - 4};
-    }
-    else if (CHESS_NUMBER > 9)
-    {
-        return {2, CHESS_NUMBER / 2, CHESS_NUMBER - 3};
+        return {(CHESS_NUMBER - 1) / 2};
     }
     else
     {
-        return {CHESS_NUMBER / 2};
+        return {starPos, (CHESS_NUMBER - 1) / 2, CHESS_NUMBER - starPos - 1};
     }
 }
 

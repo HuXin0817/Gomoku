@@ -22,7 +22,7 @@ struct std::hash<point>
 
 struct Config
 {
-    static int CHESS_NUMBER;
+    static double CHESS_NUMBER;
 
     static double BOARD_PIECE_SPACING;
 
@@ -38,7 +38,7 @@ struct Config
 
     static double BOARD_SIZE() { return BOARD_MARGIN() * 2 + BOARD_PIECE_SPACING * (CHESS_NUMBER - 1); }
 
-    static std::vector<int> StarPositions();
+    static std::vector<double> StarPositions();
 };
 
 static constexpr QColor BackGroundColor = QColor(205, 205, 205);
