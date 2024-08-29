@@ -31,7 +31,7 @@ private:
 
     std::vector<point> centerPieces() const;
 
-    static int getMinWindowSize();
+    static double getMinWindowSize();
 
     void fixSize();
 

@@ -38,7 +38,7 @@ void Sensor::paintEvent(QPaintEvent *event)
     QPointF shadowPoint(point.x() * 1.05, point.y() * 1.05);
     painter.setPen(QPen(LineColor, 0));
 
-    double BOARD_PIECE_WIDTH = Config::BOARD_PIECE_WIDTH(BOARD_PIECE_SPACING);
+    auto BOARD_PIECE_WIDTH = Config::BOARD_PIECE_WIDTH(BOARD_PIECE_SPACING);
     switch (player)
     {
     case ChessPlayer::NONE:
@@ -142,7 +142,7 @@ void Sensor::press()
     nowBoard->addPiece(x, y);
     if (nowBoard->isGameOver())
     {
-        std::vector<point> pieces = nowBoard->winPieces();
+        auto pieces = nowBoard->winPieces();
         for (auto [px, py] : pieces)
         {
             (*widgets)[px][py]->flashing(0.4, 1500);

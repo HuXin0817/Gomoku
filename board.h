@@ -13,13 +13,13 @@ public:
 
     bool judgeIsPos(int x, int y) const;
 
-    ChessPlayer getNowPlayer() const { return nowPlayer; }
+    auto getNowPlayer() const { return nowPlayer; }
 
-    bool isGameOver() const { return gameOver; }
+    auto isGameOver() const { return gameOver; }
 
     std::vector<point> winPieces() const;
 
-    std::vector<point> getMoveRecords() const { return moveRecords; }
+    auto getMoveRecords() const { return moveRecords; }
 
     point undo();
 
