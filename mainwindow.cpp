@@ -64,7 +64,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
     }
 }
 
-void MainWindow::restart() { reload({}); }
+void MainWindow::restart() {reset();}
 
 void MainWindow::undo()
 {
@@ -78,13 +78,14 @@ void MainWindow::undo()
 
 void MainWindow::addBoardSize()
 {
+    auto OLD_BOARD_PIECE_SPACING = Config::BOARD_PIECE_SPACING;
     Config::BOARD_PIECE_SPACING *= 1.1;
     if (Config::BOARD_SIZE() > getMinWindowSize())
     {
-        Config::BOARD_PIECE_SPACING /= 1.1;
+        Config::BOARD_PIECE_SPACING = OLD_BOARD_PIECE_SPACING;
         return;
     }
-    reload(board->getMoveRecords());
+    moveWidgets();
 }
 
 void MainWindow::reduceBoardSize()
@@ -92,12 +93,12 @@ void MainWindow::reduceBoardSize()
     if (Config::BOARD_PIECE_SPACING / 1.1 > 25)
     {
         Config::BOARD_PIECE_SPACING /= 1.1;
-        reload(board->getMoveRecords());
+        moveWidgets();
     }
     else if (Config::BOARD_PIECE_SPACING / 1.1 < 25)
     {
         Config::BOARD_PIECE_SPACING = 25;
-        reload(board->getMoveRecords());
+        moveWidgets();
     }
 }
 
@@ -160,17 +161,33 @@ void MainWindow::reset()
         }
     }
     moveWidgets();
-    int minBoardSize = Config::BOARD_SIZE();
-    setMinimumSize(minBoardSize, minBoardSize);
-    if (!isFullScreen())
-    {
-        resize(minBoardSize, minBoardSize);
-    }
     show();
+    update();
 }
 
 void MainWindow::moveWidgets()
 {
+    while (widgets.size() > Config::CHESS_NUMBER)
+    {
+        widgets.pop_back();
+    }
+    while (widgets.size() < Config::CHESS_NUMBER)
+    {
+        widgets.emplace_back(Config::CHESS_NUMBER);
+        for (int j = 0; j < Config::CHESS_NUMBER; j++)
+        {
+            int i = widgets.size() - 1;
+            widgets[i][j] = std::make_unique<Sensor>(this, board.get(), i, j, &widgets);
+        }
+    }
+    for (int i = 0; i < Config::CHESS_NUMBER; i++) {
+        while (widgets[i].size() > Config::CHESS_NUMBER) {
+            widgets[i].pop_back();
+        }
+        while (widgets[i].size() < Config::CHESS_NUMBER) {
+            widgets[i].push_back(std::make_unique<Sensor>(this, board.get(), i, widgets[i].size(), &widgets));
+        }
+    }
     double width = size().width();
     double height = size().height();
     double midX = width / 2;
@@ -186,6 +203,12 @@ void MainWindow::moveWidgets()
             widgets[i][j]->setFixedSize(space, space);
             widgets[i][j]->show();
         }
+    }
+    int minBoardSize = Config::BOARD_SIZE();
+    setMinimumSize(minBoardSize, minBoardSize);
+    if (!isFullScreen())
+    {
+        resize(minBoardSize, minBoardSize);
     }
 }
 
