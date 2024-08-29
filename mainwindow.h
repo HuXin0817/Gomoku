@@ -33,25 +33,7 @@ private:
 
     static int getMinWindowSize();
 
-    void fixSize()
-    {
-        double width = size().width();
-        double height = size().height();
-        double midX = width / 2;
-        double midY = height / 2;
-        for (double i = 0; i < Config::CHESS_NUMBER; i++)
-        {
-            for (double j = 0; j < Config::CHESS_NUMBER; j++)
-            {
-                double x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING;
-                double y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING;
-                widgets[i][j]->move(x, y);
-                double space = Config::BOARD_PIECE_SPACING;
-                widgets[i][j]->setFixedSize(space, space);
-                widgets[i][j]->show();
-            }
-        }
-    }
+    void fixSize();
 
 private slots:
     void undo();
