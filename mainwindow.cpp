@@ -29,7 +29,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
     QMainWindow::paintEvent(event);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.fillRect(rect(), BackGroundColor);
+    painter.fillRect(rect(), BackGroundColor());
     painter.setPen(QPen(LineColor, Config::BOARD_LINE_WIDTH()));
     for (double i = 0; i < Config::CHESS_NUMBER; i++)
     {
@@ -69,6 +69,14 @@ void MainWindow::undo()
     if (board->getMoveRecords().empty())
     {
         return;
+    }
+    if (board->isGameOver())
+    {
+        auto pieces = board->winPieces();
+        for (auto [x, y] : pieces)
+        {
+            widgets[x][y]->stopFlashing();
+        }
     }
     auto back = board->undo();
     widgets[back.x][back.y]->clear();
@@ -165,7 +173,7 @@ void MainWindow::reloadSize()
         }
         while (widgets[i].size() < Config::CHESS_NUMBER)
         {
-            widgets[i].push_back(std::make_unique<Sensor>(this, board.get(), i, widgets[i].size(), &widgets));
+            widgets[i].emplace_back(std::make_unique<Sensor>(this, board.get(), i, widgets[i].size(), &widgets));
         }
     }
     fixSize();
@@ -233,4 +241,13 @@ void MainWindow::fixSize()
             widgets[i][j]->show();
         }
     }
+}
+
+bool MainWindow::event(QEvent *event)
+{
+    if (event->type() == QEvent::ApplicationPaletteChange)
+    {
+        update();
+    }
+    return QMainWindow::event(event);
 }

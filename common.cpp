@@ -19,5 +19,5 @@ std::vector<double> Config::StarPositions()
 
 std::size_t std::hash<point>::operator()(const point &p) const
 {
-    return std::hash<int>()(p.x) ^ (std::hash<int>()(p.y) << 1);
+    return *((std::size_t *)(&p));
 }

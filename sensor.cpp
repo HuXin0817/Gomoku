@@ -18,14 +18,7 @@ void Sensor::paintEvent(QPaintEvent *event)
     if (isMouseOn)
     {
         player = nowBoard->getNowPlayer();
-        if (player == ChessPlayer::BLACK)
-        {
-            painter.setOpacity(0.6);
-        }
-        else
-        {
-            painter.setOpacity(0.7);
-        }
+        painter.setOpacity(0.7);
     }
     if (isPressed)
     {
@@ -35,8 +28,6 @@ void Sensor::paintEvent(QPaintEvent *event)
 
     double BOARD_PIECE_SPACING = width();
     QPointF point(BOARD_PIECE_SPACING / 2, BOARD_PIECE_SPACING / 2);
-    QPointF shadowPoint(point.x() * 1.05, point.y() * 1.05);
-    painter.setPen(QPen(LineColor, 0));
 
     auto BOARD_PIECE_WIDTH = Config::BOARD_PIECE_WIDTH(BOARD_PIECE_SPACING);
     switch (player)
@@ -45,26 +36,24 @@ void Sensor::paintEvent(QPaintEvent *event)
         break;
     case ChessPlayer::BLACK:
     {
-        painter.setBrush(LineColor);
-        painter.drawEllipse(shadowPoint, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
+        drawShadowPoint(painter);
         QRadialGradient gradient(point, BOARD_PIECE_WIDTH);
-        gradient.setColorAt(0, BlackMidPieceColor);
-        gradient.setColorAt(1, BlackFringePieceColor);
+        gradient.setColorAt(0, BlackMidPieceColor());
+        gradient.setColorAt(1, BlackFringePieceColor());
         painter.setBrush(gradient);
+        painter.setPen(QPen(BlackFringePieceColor(), 0));
         painter.drawEllipse(point, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
         break;
     }
     case ChessPlayer::WRITE:
     {
-        painter.setBrush(LineColor);
-        painter.drawEllipse(shadowPoint, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
+        drawShadowPoint(painter);
         QRadialGradient gradient(point, BOARD_PIECE_WIDTH);
-        gradient.setColorAt(0, WriteMidPieceColor);
-        gradient.setColorAt(1, WriteFringePieceColor);
-        painter.setPen(QPen(WriteEdgePieceColor, 0));
+        gradient.setColorAt(0, WriteMidPieceColor());
+        gradient.setColorAt(1, WriteFringePieceColor());
         painter.setBrush(gradient);
+        painter.setPen(QPen(WriteEdgePieceColor(), 0));
         painter.drawEllipse(point, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
-        painter.setPen(QPen(LineColor, 0));
         break;
     }
     }
@@ -89,10 +78,6 @@ void Sensor::leaveEvent(QEvent *event)
 {
     QWidget::leaveEvent(event);
     isMouseOn = false;
-    if (!nowBoard->isGameOver())
-    {
-        opacityEffect.setOpacity(1);
-    }
     update();
 }
 
@@ -102,15 +87,21 @@ void Sensor::mousePressEvent(QMouseEvent *event)
     press();
 }
 
-void Sensor::flashing(double midValue, int duration)
+void Sensor::flashing()
 {
-    animation.setDuration(duration);
+    animation.setDuration(1500);
     animation.setKeyValueAt(0.0, 1.0);
-    animation.setKeyValueAt(0.5, midValue);
+    animation.setKeyValueAt(0.5, 0.4);
     animation.setKeyValueAt(1.0, 1.0);
     animation.setEasingCurve(QEasingCurve::Linear);
     animation.setLoopCount(-1);
     animation.start();
+}
+
+void Sensor::stopFlashing()
+{
+    animation.stop();
+    opacityEffect.setOpacity(1);
 }
 
 void Sensor::press()
@@ -128,16 +119,8 @@ void Sensor::press()
         return;
     }
     isPressed = true;
-    for (auto &widget : *widgets)
-    {
-        for (auto &w : widget)
-        {
-            w->stopFlashing();
-            w->opacityEffect.setOpacity(1);
-            w->isMouseOn = false;
-            w->update();
-        }
-    }
+    isMouseOn = false;
+    opacityEffect.setOpacity(1);
     pressedPlayer = nowBoard->getNowPlayer();
     nowBoard->addPiece(x, y);
     if (nowBoard->isGameOver())
@@ -145,7 +128,7 @@ void Sensor::press()
         auto pieces = nowBoard->winPieces();
         for (auto [px, py] : pieces)
         {
-            (*widgets)[px][py]->flashing(0.4, 1500);
+            (*widgets)[px][py]->flashing();
         }
     }
     update();
@@ -159,4 +142,19 @@ void Sensor::clear()
     animation.stop();
     opacityEffect.setOpacity(1);
     update();
+}
+
+void Sensor::drawShadowPoint(QPainter &painter)
+{
+    if (IS_DARK_THEME())
+    {
+        return;
+    }
+    double BOARD_PIECE_SPACING = width();
+    double pos = BOARD_PIECE_SPACING / 2 * 1.05;
+    QPointF point(pos, pos);
+    auto BOARD_PIECE_WIDTH = Config::BOARD_PIECE_WIDTH(BOARD_PIECE_SPACING);
+    painter.setPen(QPen(LineColor, 0));
+    painter.setBrush(LineColor);
+    painter.drawEllipse(point, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
 }

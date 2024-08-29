@@ -35,6 +35,8 @@ private:
 
     void fixSize();
 
+    bool event(QEvent *event) override;
+
 private slots:
     void undo();
 

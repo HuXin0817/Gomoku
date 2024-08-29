@@ -19,9 +19,9 @@ class Sensor final : public QWidget
 public:
     Sensor(QWidget *parent, Board *nowBoard, int x, int y, board_sensors *widgets);
 
-    void flashing(double midValue, int duration);
+    void flashing();
 
-    void stopFlashing() { animation.stop(); }
+    void stopFlashing();
 
     void press();
 
@@ -46,4 +46,6 @@ private:
     board_sensors *widgets;
     QGraphicsOpacityEffect opacityEffect;
     QPropertyAnimation animation;
+
+    void drawShadowPoint(QPainter &painter);
 };

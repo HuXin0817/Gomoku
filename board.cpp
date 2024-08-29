@@ -130,6 +130,14 @@ point Board::undo()
     moveRecords.pop_back();
     chessMap[back.x][back.y] = ChessPlayer::NONE;
     gameOver = false;
+    if (nowPlayer == ChessPlayer::WRITE)
+    {
+        nowPlayer = ChessPlayer::BLACK;
+    }
+    else
+    {
+        nowPlayer = ChessPlayer::WRITE;
+    }
     return back;
 }
 
