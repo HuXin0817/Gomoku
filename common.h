@@ -30,9 +30,11 @@ struct Config
 
     static double BOARD_LINE_WIDTH() { return BOARD_PIECE_SPACING / 20.0; }
 
+    static double BOARD_LINE_WIDTH(double BOARD_PIECE_SPACING) { return BOARD_PIECE_SPACING / 20.0; }
+
     static double BOARD_STAR_POINT_WIDTH() { return BOARD_LINE_WIDTH() * 2; }
 
-    static double BOARD_PIECE_WIDTH() { return BOARD_LINE_WIDTH() * 8; }
+    static double BOARD_PIECE_WIDTH(double BOARD_PIECE_SPACING) { return BOARD_LINE_WIDTH(BOARD_PIECE_SPACING) * 8; }
 
     static double BOARD_MARGIN() { return BOARD_PIECE_SPACING / 4 * 5; }
 

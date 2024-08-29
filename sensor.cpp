@@ -33,10 +33,12 @@ void Sensor::paintEvent(QPaintEvent *event)
     }
     painter.setRenderHint(QPainter::Antialiasing);
 
-    QPointF point(Config::BOARD_PIECE_SPACING / 2, Config::BOARD_PIECE_SPACING / 2);
+    double BOARD_PIECE_SPACING = width();
+    QPointF point(BOARD_PIECE_SPACING / 2, BOARD_PIECE_SPACING / 2);
     QPointF shadowPoint(point.x() * 1.05, point.y() * 1.05);
     painter.setPen(QPen(LineColor, 0));
 
+    double BOARD_PIECE_WIDTH = Config::BOARD_PIECE_WIDTH(BOARD_PIECE_SPACING);
     switch (player)
     {
     case ChessPlayer::NONE:
@@ -44,24 +46,24 @@ void Sensor::paintEvent(QPaintEvent *event)
     case ChessPlayer::BLACK:
     {
         painter.setBrush(LineColor);
-        painter.drawEllipse(shadowPoint, Config::BOARD_PIECE_WIDTH(), Config::BOARD_PIECE_WIDTH());
-        QRadialGradient gradient(point, Config::BOARD_PIECE_WIDTH());
+        painter.drawEllipse(shadowPoint, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
+        QRadialGradient gradient(point, BOARD_PIECE_WIDTH);
         gradient.setColorAt(0, BlackMidPieceColor);
         gradient.setColorAt(1, BlackFringePieceColor);
         painter.setBrush(gradient);
-        painter.drawEllipse(point, Config::BOARD_PIECE_WIDTH(), Config::BOARD_PIECE_WIDTH());
+        painter.drawEllipse(point, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
         break;
     }
     case ChessPlayer::WRITE:
     {
         painter.setBrush(LineColor);
-        painter.drawEllipse(shadowPoint, Config::BOARD_PIECE_WIDTH(), Config::BOARD_PIECE_WIDTH());
-        QRadialGradient gradient(point, Config::BOARD_PIECE_WIDTH());
+        painter.drawEllipse(shadowPoint, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
+        QRadialGradient gradient(point, BOARD_PIECE_WIDTH);
         gradient.setColorAt(0, WriteMidPieceColor);
         gradient.setColorAt(1, WriteFringePieceColor);
         painter.setPen(QPen(WriteEdgePieceColor, 0));
         painter.setBrush(gradient);
-        painter.drawEllipse(point, Config::BOARD_PIECE_WIDTH(), Config::BOARD_PIECE_WIDTH());
+        painter.drawEllipse(point, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
         painter.setPen(QPen(LineColor, 0));
         break;
     }
