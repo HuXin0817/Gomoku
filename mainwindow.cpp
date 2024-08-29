@@ -223,7 +223,7 @@ void MainWindow::fixSize()
             auto x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING - 0.5;
             auto y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING - 0.5;
             auto space = Config::BOARD_PIECE_SPACING + 1;
-
+            widgets[i][j]->setMouseOn(false);
             auto *animation = new QPropertyAnimation(widgets[i][j].get(), "pos");
             animation->setDuration(200);
             animation->setStartValue(widgets[i][j]->pos());

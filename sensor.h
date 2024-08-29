@@ -23,6 +23,8 @@ public:
 
     void stopFlashing();
 
+    void setMouseOn(bool m) { isMouseOn = m; }
+
     void press();
 
     void clear();
