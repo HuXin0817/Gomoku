@@ -182,8 +182,8 @@ void Sensor::drawStarPoint(QPainter &painter)
 
     painter.setPen(QPen(LineColor, Config::BOARD_LINE_WIDTH()));
     painter.setBrush(LineColor);
-    double width = this->width();
-    double height = this->height();
+    double width = width();
+    double height = height();
     QPointF point(width / 2, height / 2);
     painter.drawEllipse(point, Config::BOARD_STAR_POINT_WIDTH(), Config::BOARD_STAR_POINT_WIDTH());
 }
@@ -194,8 +194,8 @@ void Sensor::drawRightLine(QPainter &painter)
     {
         return;
     }
-    double width = this->width();
-    double height = this->height();
+    double width = width();
+    double height = height();
     QPointF point1(width, height / 2);
     QPointF point2(width / 2, height / 2);
     painter.setPen(QPen(LineColor, Config::BOARD_LINE_WIDTH()));
@@ -208,8 +208,8 @@ void Sensor::drawLeftLine(QPainter &painter)
     {
         return;
     }
-    double width = this->width();
-    double height = this->height();
+    double width = width();
+    double height = height();
     QPointF point1(0, height / 2);
     QPointF point2(width / 2, height / 2);
     painter.setPen(QPen(LineColor, Config::BOARD_LINE_WIDTH()));
@@ -222,8 +222,8 @@ void Sensor::drawDownLine(QPainter &painter)
     {
         return;
     }
-    double width = this->width();
-    double height = this->height();
+    double width = width();
+    double height = height();
     QPointF point1(width / 2, height);
     QPointF point2(width / 2, height / 2);
     painter.setPen(QPen(LineColor, Config::BOARD_LINE_WIDTH()));
@@ -236,8 +236,8 @@ void Sensor::drawUpLine(QPainter &painter)
     {
         return;
     }
-    double width = this->width();
-    double height = this->height();
+    double width = width();
+    double height = height();
     QPointF point1(width / 2, 0);
     QPointF point2(width / 2, height / 2);
     painter.setPen(QPen(LineColor, Config::BOARD_LINE_WIDTH()));
