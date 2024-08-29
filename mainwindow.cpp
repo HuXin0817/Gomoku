@@ -52,6 +52,7 @@ void MainWindow::addBoardSize()
     if (Config::BOARD_SIZE() > getMinWindowSize())
     {
         Config::BOARD_PIECE_SPACING = OLD_BOARD_PIECE_SPACING;
+        QApplication::beep();
         return;
     }
     reloadSize();
@@ -64,10 +65,9 @@ void MainWindow::reduceBoardSize()
         Config::BOARD_PIECE_SPACING /= 1.1;
         reloadSize();
     }
-    else if (Config::BOARD_PIECE_SPACING / 1.1 < 25)
+    else
     {
-        Config::BOARD_PIECE_SPACING = 25;
-        reloadSize();
+        QApplication::beep();
     }
 }
 
@@ -77,6 +77,7 @@ void MainWindow::addChessNumber()
     if (Config::BOARD_SIZE() > getMinWindowSize())
     {
         Config::CHESS_NUMBER -= 2;
+        QApplication::beep();
         return;
     }
     reload(centerPieces());
@@ -93,10 +94,15 @@ void MainWindow::reduceChessNumber()
             if (x >= Config::CHESS_NUMBER || y >= Config::CHESS_NUMBER)
             {
                 Config::CHESS_NUMBER += 2;
+                QApplication::beep();
                 return;
             }
         }
         reload(moves);
+    }
+    else
+    {
+        QApplication::beep();
     }
 }
 
