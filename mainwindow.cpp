@@ -23,45 +23,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 void MainWindow::paintEvent(QPaintEvent *event)
 {
     QMainWindow::paintEvent(event);
-    double width = size().width();
-    double height = size().height();
-    auto midX = width / 2;
-    auto midY = height / 2;
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(rect(), BackGroundColor());
-    painter.setPen(QPen(LineColor, Config::BOARD_LINE_WIDTH()));
-    for (double i = 0; i < Config::CHESS_NUMBER; i++)
-    {
-        for (double j = 0; j < Config::CHESS_NUMBER; j++)
-        {
-            auto x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING + Config::BOARD_PIECE_SPACING / 2;
-            auto y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING + Config::BOARD_PIECE_SPACING / 2;
-            QPointF point1(x, y);
-            if (i + 1 < Config::CHESS_NUMBER)
-            {
-                QPointF point2(x + Config::BOARD_PIECE_SPACING, y);
-                painter.drawLine(point1, point2);
-            }
-            if (j + 1 < Config::CHESS_NUMBER)
-            {
-                QPointF point2(x, y + Config::BOARD_PIECE_SPACING);
-                painter.drawLine(point1, point2);
-            }
-        }
-    }
-    painter.setBrush(LineColor);
-    auto starPositions = Config::StarPositions();
-    for (auto i : starPositions)
-    {
-        for (auto j : starPositions)
-        {
-            auto x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING + Config::BOARD_PIECE_SPACING / 2;
-            auto y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING + Config::BOARD_PIECE_SPACING / 2;
-            QPointF point(x, y);
-            painter.drawEllipse(point, Config::BOARD_STAR_POINT_WIDTH(), Config::BOARD_STAR_POINT_WIDTH());
-        }
-    }
 }
 
 void MainWindow::undo()
@@ -173,7 +136,25 @@ void MainWindow::reloadSize()
         }
         while (widgets[i].size() < Config::CHESS_NUMBER)
         {
-            widgets[i].emplace_back(std::make_unique<Sensor>(this, board.get(), i, widgets[i].size(), &widgets));
+            int j = widgets[i].size();
+            widgets[i].emplace_back(std::make_unique<Sensor>(this, board.get(), i, j, &widgets));
+            double x, y;
+            if (i == 0 && j == 0)
+            {
+                x = Config::BOARD_MARGIN() / 2;
+                y = Config::BOARD_MARGIN() / 2;
+            }
+            else if (j == 0)
+            {
+                x = widgets[i - 1][j]->pos().x() + Config::BOARD_PIECE_SPACING;
+                y = widgets[i - 1][j]->pos().y();
+            }
+            else
+            {
+                x = widgets[i][j - 1]->pos().x();
+                y = widgets[i][j - 1]->pos().y() + Config::BOARD_PIECE_SPACING;
+            }
+            widgets[i][j]->move(x, y);
         }
     }
     fixSize();
@@ -233,15 +214,15 @@ void MainWindow::fixSize()
     {
         for (double j = 0; j < Config::CHESS_NUMBER; j++)
         {
-            auto x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING;
-            auto y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING;
-            auto space = Config::BOARD_PIECE_SPACING;
-            
-            auto* animation = new QPropertyAnimation(widgets[i][j].get(), "pos");
-            animation->setDuration(200); 
-            animation->setStartValue(widgets[i][j]->pos()); 
-            animation->setEndValue(QPoint(x, y)); 
-            animation->start(QAbstractAnimation::DeleteWhenStopped); 
+            auto x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING - 0.5;
+            auto y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING - 0.5;
+            auto space = Config::BOARD_PIECE_SPACING + 1;
+
+            auto *animation = new QPropertyAnimation(widgets[i][j].get(), "pos");
+            animation->setDuration(200);
+            animation->setStartValue(widgets[i][j]->pos());
+            animation->setEndValue(QPoint(x, y));
+            animation->start(QAbstractAnimation::DeleteWhenStopped);
 
             widgets[i][j]->setFixedSize(space, space);
             widgets[i][j]->show();

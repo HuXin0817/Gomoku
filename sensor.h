@@ -49,10 +49,13 @@ private:
 
     void drawShadowPoint(QPainter &painter);
 
-    void drawUpLine(QPainter &painter) {
-        if (x - 1 == 0) {
-            return;
-        }
+    void drawUpLine(QPainter &painter);
 
-    }
+    void drawDownLine(QPainter &painter);
+
+    void drawLeftLine(QPainter &painter);
+
+    void drawRightLine(QPainter &painter);
+
+    void drawStarPoint(QPainter &painter);
 };

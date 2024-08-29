@@ -25,7 +25,7 @@ private:
     std::unique_ptr<Board> board;
     board_sensors widgets;
 
-    void reload(const std::vector<point> &moveRecord);
+    void reload(const std::vector<point> &moveRecord = {});
 
     void reloadSize();
 
@@ -40,7 +40,7 @@ private:
 private slots:
     void undo();
 
-    void restart() { reload({}); }
+    void restart() { reload(); }
 
     void addBoardSize();
 
