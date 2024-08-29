@@ -146,13 +146,13 @@ void MainWindow::reloadSize()
             }
             else if (j == 0)
             {
-                x = widgets[i - 1][j]->pos().x() + Config::BOARD_PIECE_SPACING;
+                x = widgets[i - 1][j]->pos().x() + Config::BOARD_PIECE_SPACING - 0.5;
                 y = widgets[i - 1][j]->pos().y();
             }
             else
             {
                 x = widgets[i][j - 1]->pos().x();
-                y = widgets[i][j - 1]->pos().y() + Config::BOARD_PIECE_SPACING;
+                y = widgets[i][j - 1]->pos().y() + Config::BOARD_PIECE_SPACING + 0.5;
             }
             widgets[i][j]->move(x, y);
         }
