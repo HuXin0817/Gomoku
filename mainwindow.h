@@ -27,18 +27,36 @@ private:
 
     void reload(const std::vector<point> &moveRecord);
 
-    void reset();
-
-    void moveWidgets();
+    void reloadSize();
 
     std::vector<point> centerPieces() const;
 
-    int getMinWindowSize() const;
+    static int getMinWindowSize();
+
+    void fixSize()
+    {
+        double width = size().width();
+        double height = size().height();
+        double midX = width / 2;
+        double midY = height / 2;
+        for (double i = 0; i < Config::CHESS_NUMBER; i++)
+        {
+            for (double j = 0; j < Config::CHESS_NUMBER; j++)
+            {
+                double x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING;
+                double y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING;
+                widgets[i][j]->move(x, y);
+                double space = Config::BOARD_PIECE_SPACING;
+                widgets[i][j]->setFixedSize(space, space);
+                widgets[i][j]->show();
+            }
+        }
+    }
 
 private slots:
     void undo();
 
-    void restart();
+    void restart() { reload({}); }
 
     void addBoardSize();
 

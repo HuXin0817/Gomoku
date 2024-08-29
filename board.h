@@ -7,9 +7,7 @@
 class Board
 {
 public:
-    Board() : chessMap(Config::CHESS_NUMBER, std::vector<ChessPlayer>(Config::CHESS_NUMBER)) {}
-
-    Board(const Board &) = default;
+    Board() { restart(); }
 
     void addPiece(int x, int y);
 
@@ -24,6 +22,8 @@ public:
     std::vector<point> getMoveRecords() const { return moveRecords; }
 
     point undo();
+
+    void restart();
 
 private:
     bool gameOver = false;

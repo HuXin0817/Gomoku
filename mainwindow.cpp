@@ -2,7 +2,8 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
-    reset();
+    board = std::make_unique<Board>();
+    reloadSize();
     setWindowOpacity(0.95);
 
     auto *restartShortcut = new QShortcut(QKeySequence("Ctrl+R"), this);
@@ -64,8 +65,6 @@ void MainWindow::paintEvent(QPaintEvent *event)
     }
 }
 
-void MainWindow::restart() {reset();}
-
 void MainWindow::undo()
 {
     if (board->getMoveRecords().empty())
@@ -85,7 +84,7 @@ void MainWindow::addBoardSize()
         Config::BOARD_PIECE_SPACING = OLD_BOARD_PIECE_SPACING;
         return;
     }
-    moveWidgets();
+    reloadSize();
 }
 
 void MainWindow::reduceBoardSize()
@@ -93,12 +92,12 @@ void MainWindow::reduceBoardSize()
     if (Config::BOARD_PIECE_SPACING / 1.1 > 25)
     {
         Config::BOARD_PIECE_SPACING /= 1.1;
-        moveWidgets();
+        reloadSize();
     }
     else if (Config::BOARD_PIECE_SPACING / 1.1 < 25)
     {
         Config::BOARD_PIECE_SPACING = 25;
-        moveWidgets();
+        reloadSize();
     }
 }
 
@@ -133,7 +132,12 @@ void MainWindow::reduceChessNumber()
 
 void MainWindow::reload(const std::vector<point> &moveRecord)
 {
-    reset();
+    for (auto [x, y] : board->getMoveRecords())
+    {
+        widgets[x][y]->clear();
+    }
+    board->restart();
+    reloadSize();
     for (auto [x, y] : moveRecord)
     {
         if (x < Config::CHESS_NUMBER && y < Config::CHESS_NUMBER)
@@ -144,28 +148,7 @@ void MainWindow::reload(const std::vector<point> &moveRecord)
     update();
 }
 
-void MainWindow::reset()
-{
-    widgets.clear();
-    board = std::make_unique<Board>();
-    widgets = std::vector<std::vector<std::unique_ptr<Sensor>>>(Config::CHESS_NUMBER);
-    for (auto &w : widgets)
-    {
-        w = std::vector<std::unique_ptr<Sensor>>(Config::CHESS_NUMBER);
-    }
-    for (int i = 0; i < Config::CHESS_NUMBER; i++)
-    {
-        for (int j = 0; j < Config::CHESS_NUMBER; j++)
-        {
-            widgets[i][j] = std::make_unique<Sensor>(this, board.get(), i, j, &widgets);
-        }
-    }
-    moveWidgets();
-    show();
-    update();
-}
-
-void MainWindow::moveWidgets()
+void MainWindow::reloadSize()
 {
     while (widgets.size() > Config::CHESS_NUMBER)
     {
@@ -173,37 +156,20 @@ void MainWindow::moveWidgets()
     }
     while (widgets.size() < Config::CHESS_NUMBER)
     {
-        widgets.emplace_back(Config::CHESS_NUMBER);
-        for (int j = 0; j < Config::CHESS_NUMBER; j++)
-        {
-            int i = widgets.size() - 1;
-            widgets[i][j] = std::make_unique<Sensor>(this, board.get(), i, j, &widgets);
-        }
+        widgets.emplace_back();
     }
-    for (int i = 0; i < Config::CHESS_NUMBER; i++) {
-        while (widgets[i].size() > Config::CHESS_NUMBER) {
+    for (int i = 0; i < Config::CHESS_NUMBER; i++)
+    {
+        while (widgets[i].size() > Config::CHESS_NUMBER)
+        {
             widgets[i].pop_back();
         }
-        while (widgets[i].size() < Config::CHESS_NUMBER) {
+        while (widgets[i].size() < Config::CHESS_NUMBER)
+        {
             widgets[i].push_back(std::make_unique<Sensor>(this, board.get(), i, widgets[i].size(), &widgets));
         }
     }
-    double width = size().width();
-    double height = size().height();
-    double midX = width / 2;
-    double midY = height / 2;
-    for (double i = 0; i < Config::CHESS_NUMBER; i++)
-    {
-        for (double j = 0; j < Config::CHESS_NUMBER; j++)
-        {
-            double x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING;
-            double y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING;
-            widgets[i][j]->move(x, y);
-            double space = Config::BOARD_PIECE_SPACING;
-            widgets[i][j]->setFixedSize(space, space);
-            widgets[i][j]->show();
-        }
-    }
+    fixSize();
     int minBoardSize = Config::BOARD_SIZE();
     setMinimumSize(minBoardSize, minBoardSize);
     if (!isFullScreen())
@@ -215,7 +181,7 @@ void MainWindow::moveWidgets()
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
-    moveWidgets();
+    fixSize();
 }
 
 std::vector<point> MainWindow::centerPieces() const
@@ -230,7 +196,7 @@ std::vector<point> MainWindow::centerPieces() const
         maxX = std::max(x, maxX);
         maxY = std::max(y, maxY);
         minX = std::min(x, minX);
-        minY = std::min(x, minY);
+        minY = std::min(y, minY);
     }
     for (auto &[x, y] : moveRecords)
     {
@@ -240,7 +206,7 @@ std::vector<point> MainWindow::centerPieces() const
     return moveRecords;
 }
 
-int MainWindow::getMinWindowSize() const
+int MainWindow::getMinWindowSize()
 {
     QScreen *screen = QGuiApplication::primaryScreen();
     QRect screenGeometry = screen->geometry();

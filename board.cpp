@@ -132,3 +132,11 @@ point Board::undo()
     gameOver = false;
     return back;
 }
+
+void Board::restart()
+{
+    gameOver = false;
+    nowPlayer = ChessPlayer::BLACK;
+    chessMap = {size_t(Config::CHESS_NUMBER), std::vector<ChessPlayer>(Config::CHESS_NUMBER)};
+    moveRecords.clear();
+}

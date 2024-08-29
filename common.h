@@ -9,9 +9,7 @@ struct point
 
     point(int x, int y) : x(x), y(y) {}
 
-    bool operator==(const point &other) const;
-
-    bool operator<(const point &other) const;
+    bool operator<=>(const point &other) const = default;
 };
 
 template <>
