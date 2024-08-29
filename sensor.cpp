@@ -182,9 +182,9 @@ void Sensor::drawStarPoint(QPainter &painter)
 
     painter.setPen(QPen(LineColor, Config::BOARD_LINE_WIDTH()));
     painter.setBrush(LineColor);
-    double width = width();
-    double height = height();
-    QPointF point(width / 2, height / 2);
+    double w = width();
+    double h = height();
+    QPointF point(w / 2, h / 2);
     painter.drawEllipse(point, Config::BOARD_STAR_POINT_WIDTH(), Config::BOARD_STAR_POINT_WIDTH());
 }
 
@@ -194,10 +194,10 @@ void Sensor::drawRightLine(QPainter &painter)
     {
         return;
     }
-    double width = width();
-    double height = height();
-    QPointF point1(width, height / 2);
-    QPointF point2(width / 2, height / 2);
+    double w = width();
+    double h = height();
+    QPointF point1(w, h / 2);
+    QPointF point2(w / 2, h / 2);
     painter.setPen(QPen(LineColor, Config::BOARD_LINE_WIDTH()));
     painter.drawLine(point1, point2);
 }
@@ -208,10 +208,10 @@ void Sensor::drawLeftLine(QPainter &painter)
     {
         return;
     }
-    double width = width();
-    double height = height();
-    QPointF point1(0, height / 2);
-    QPointF point2(width / 2, height / 2);
+    double w = width();
+    double h = height();
+    QPointF point1(0, h / 2);
+    QPointF point2(w / 2, h / 2);
     painter.setPen(QPen(LineColor, Config::BOARD_LINE_WIDTH()));
     painter.drawLine(point1, point2);
 }
@@ -222,10 +222,10 @@ void Sensor::drawDownLine(QPainter &painter)
     {
         return;
     }
-    double width = width();
-    double height = height();
-    QPointF point1(width / 2, height);
-    QPointF point2(width / 2, height / 2);
+    double w = width();
+    double h = height();
+    QPointF point1(w / 2, h);
+    QPointF point2(w / 2, h / 2);
     painter.setPen(QPen(LineColor, Config::BOARD_LINE_WIDTH()));
     painter.drawLine(point1, point2);
 }
@@ -236,10 +236,10 @@ void Sensor::drawUpLine(QPainter &painter)
     {
         return;
     }
-    double width = width();
-    double height = height();
-    QPointF point1(width / 2, 0);
-    QPointF point2(width / 2, height / 2);
+    double w = width();
+    double h = height();
+    QPointF point1(w / 2, 0);
+    QPointF point2(w / 2, h / 2);
     painter.setPen(QPen(LineColor, Config::BOARD_LINE_WIDTH()));
     painter.drawLine(point1, point2);
 }

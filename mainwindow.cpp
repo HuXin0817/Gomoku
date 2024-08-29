@@ -3,7 +3,14 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     board = std::make_unique<Board>();
-    reloadSize(false);
+    reloadSize();
+    fixWidgetsSize();
+    auto minBoardSize = Config::BOARD_SIZE();
+    setMinimumSize(minBoardSize, minBoardSize);
+    if (!isFullScreen())
+    {
+        resize(minBoardSize, minBoardSize);
+    }
 
     auto *restartShortcut = new QShortcut(QKeySequence("Ctrl+R"), this);
     auto *undoShortcut = new QShortcut(QKeySequence("Ctrl+Z"), this);
@@ -55,7 +62,9 @@ void MainWindow::addBoardSize()
         QApplication::beep();
         return;
     }
-    reloadSize(true);
+    reloadSize();
+    fixWidgetsSize();
+    fixSize(true);
 }
 
 void MainWindow::reduceBoardSize()
@@ -63,7 +72,9 @@ void MainWindow::reduceBoardSize()
     if (Config::BOARD_PIECE_SPACING / 1.1 > 25)
     {
         Config::BOARD_PIECE_SPACING /= 1.1;
-        reloadSize(false);
+        reloadSize();
+        fixSize(true);
+        fixWidgetsSize();
     }
     else
     {
@@ -113,7 +124,8 @@ void MainWindow::reload(const std::vector<point> &moveRecord)
         widgets[x][y]->clear();
     }
     board->restart();
-    reloadSize(false);
+    reloadSize();
+    fixWidgetsSize();
     for (auto [x, y] : moveRecord)
     {
         if (x < Config::CHESS_NUMBER && y < Config::CHESS_NUMBER)
@@ -124,7 +136,7 @@ void MainWindow::reload(const std::vector<point> &moveRecord)
     update();
 }
 
-void MainWindow::reloadSize(bool isBlowUp)
+void MainWindow::reloadSize()
 {
     while (widgets.size() > Config::CHESS_NUMBER)
     {
@@ -152,13 +164,13 @@ void MainWindow::reloadSize(bool isBlowUp)
             }
             else if (j == 0)
             {
-                x = widgets[i - 1][j]->pos().x() + Config::BOARD_PIECE_SPACING - 0.5;
-                y = widgets[i - 1][j]->pos().y();
+                x = double(widgets[i - 1][j]->pos().x()) + Config::BOARD_PIECE_SPACING - 0.5;
+                y = double(widgets[i - 1][j]->pos().y());
             }
             else
             {
-                x = widgets[i][j - 1]->pos().x();
-                y = widgets[i][j - 1]->pos().y() + Config::BOARD_PIECE_SPACING + 0.5;
+                x = double(widgets[i][j - 1]->pos().x());
+                y = double(widgets[i][j - 1]->pos().y()) + Config::BOARD_PIECE_SPACING + 0.5;
             }
             widgets[i][j]->move(x, y);
         }
@@ -169,17 +181,12 @@ void MainWindow::reloadSize(bool isBlowUp)
     {
         resize(minBoardSize, minBoardSize);
     }
-    fixSize(isBlowUp);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
-    QSize newSize = event->size();
-    QSize oldSize = event->oldSize();
-
-    bool isBlowUp = (newSize.width() > oldSize.width()) || (newSize.height() > oldSize.height());
-    fixSize(isBlowUp, false);
+    fixSize(false);
 }
 
 std::vector<point> MainWindow::centerPieces() const
@@ -214,7 +221,7 @@ double MainWindow::getMinWindowSize()
     return minSize - 50;
 }
 
-void MainWindow::fixSize(bool isBlowUp, bool wait)
+void MainWindow::fixSize(bool wait)
 {
     double width = size().width();
     double height = size().height();
@@ -230,13 +237,6 @@ void MainWindow::fixSize(bool isBlowUp, bool wait)
             auto y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING - 0.5;
             widgets[i][j]->setMouseOn(false);
 
-            if (isBlowUp)
-            {
-                auto space = Config::BOARD_PIECE_SPACING + 1;
-                widgets[i][j]->setFixedSize(space, space);
-                widgets[i][j]->show();
-            }
-
             auto *animation = new QPropertyAnimation(widgets[i][j].get(), "pos");
             animation->setDuration(200);
             animation->setStartValue(widgets[i][j]->pos());
@@ -251,19 +251,6 @@ void MainWindow::fixSize(bool isBlowUp, bool wait)
     if (wait)
     {
         loop.exec();
-    }
-
-    if (!isBlowUp)
-    {
-        for (int i = 0; i < Config::CHESS_NUMBER; i++)
-        {
-            for (int j = 0; j < Config::CHESS_NUMBER; j++)
-            {
-                auto space = Config::BOARD_PIECE_SPACING + 1;
-                widgets[i][j]->setFixedSize(space, space);
-                widgets[i][j]->show();
-            }
-        }
     }
 }
 
