@@ -163,16 +163,13 @@ void MainWindow::reloadSize(bool isBlowUp)
             widgets[i][j]->move(x, y);
         }
     }
-    std::thread th([this](bool isBlowUp)
-                   { fixSize(isBlowUp); }, isBlowUp);
-
-    th.detach();
     auto minBoardSize = Config::BOARD_SIZE();
     setMinimumSize(minBoardSize, minBoardSize);
     if (!isFullScreen())
     {
         resize(minBoardSize, minBoardSize);
     }
+    fixSize(isBlowUp);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -182,7 +179,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     QSize oldSize = event->oldSize();
 
     bool isBlowUp = (newSize.width() > oldSize.width()) || (newSize.height() > oldSize.height());
-    fixSize(isBlowUp);
+    fixSize(isBlowUp, false);
 }
 
 std::vector<point> MainWindow::centerPieces() const
@@ -217,7 +214,7 @@ double MainWindow::getMinWindowSize()
     return minSize - 50;
 }
 
-void MainWindow::fixSize(bool isBlowUp)
+void MainWindow::fixSize(bool isBlowUp, bool wait)
 {
     double width = size().width();
     double height = size().height();
@@ -251,7 +248,10 @@ void MainWindow::fixSize(bool isBlowUp)
     QEventLoop loop;
     connect(animationGroup, &QParallelAnimationGroup::finished, &loop, &QEventLoop::quit);
     animationGroup->start();
-    loop.exec();
+    if (wait)
+    {
+        loop.exec();
+    }
 
     if (!isBlowUp)
     {

@@ -5,8 +5,6 @@
 #include <QShortcut>
 #include <QParallelAnimationGroup>
 
-#include <thread>
-
 #include "sensor.h"
 
 class MainWindow final : public QMainWindow
@@ -33,7 +31,7 @@ private:
 
     static double getMinWindowSize();
 
-    void fixSize(bool isBlowUp);
+    void fixSize(bool isBlowUp, bool wait = true);
 
     bool event(QEvent *event) override;
 
