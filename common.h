@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QColor>
 #include <QApplication>
 #include <QtGui/qpalette.h>
 

@@ -1,12 +1,9 @@
 #pragma once
 
 #include <QMainWindow>
-#include <QPainter>
 #include <QMouseEvent>
 #include <QShortcut>
 
-#include "common.h"
-#include "board.h"
 #include "sensor.h"
 
 class MainWindow final : public QMainWindow

@@ -6,7 +6,6 @@
 #include <QGraphicsOpacityEffect>
 
 #include "board.h"
-#include "common.h"
 
 class Sensor;
 

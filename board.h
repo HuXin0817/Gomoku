@@ -2,8 +2,6 @@
 
 #include "common.h"
 
-#include <unordered_set>
-
 class Board
 {
 public:
