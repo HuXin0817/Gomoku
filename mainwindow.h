@@ -3,6 +3,9 @@
 #include <QMainWindow>
 #include <QMouseEvent>
 #include <QShortcut>
+#include <QParallelAnimationGroup>
+
+#include <thread>
 
 #include "sensor.h"
 
@@ -24,13 +27,13 @@ private:
 
     void reload(const std::vector<point> &moveRecord = {});
 
-    void reloadSize();
+    void reloadSize(bool isBlowUp);
 
     std::vector<point> centerPieces() const;
 
     static double getMinWindowSize();
 
-    void fixSize();
+    void fixSize(bool isBlowUp);
 
     bool event(QEvent *event) override;
 

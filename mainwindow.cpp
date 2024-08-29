@@ -3,7 +3,7 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     board = std::make_unique<Board>();
-    reloadSize();
+    reloadSize(false);
 
     auto *restartShortcut = new QShortcut(QKeySequence("Ctrl+R"), this);
     auto *undoShortcut = new QShortcut(QKeySequence("Ctrl+Z"), this);
@@ -55,7 +55,7 @@ void MainWindow::addBoardSize()
         QApplication::beep();
         return;
     }
-    reloadSize();
+    reloadSize(true);
 }
 
 void MainWindow::reduceBoardSize()
@@ -63,7 +63,7 @@ void MainWindow::reduceBoardSize()
     if (Config::BOARD_PIECE_SPACING / 1.1 > 25)
     {
         Config::BOARD_PIECE_SPACING /= 1.1;
-        reloadSize();
+        reloadSize(false);
     }
     else
     {
@@ -113,7 +113,7 @@ void MainWindow::reload(const std::vector<point> &moveRecord)
         widgets[x][y]->clear();
     }
     board->restart();
-    reloadSize();
+    reloadSize(false);
     for (auto [x, y] : moveRecord)
     {
         if (x < Config::CHESS_NUMBER && y < Config::CHESS_NUMBER)
@@ -124,7 +124,7 @@ void MainWindow::reload(const std::vector<point> &moveRecord)
     update();
 }
 
-void MainWindow::reloadSize()
+void MainWindow::reloadSize(bool isBlowUp)
 {
     while (widgets.size() > Config::CHESS_NUMBER)
     {
@@ -163,7 +163,10 @@ void MainWindow::reloadSize()
             widgets[i][j]->move(x, y);
         }
     }
-    fixSize();
+    std::thread th([this](bool isBlowUp)
+                   { fixSize(isBlowUp); }, isBlowUp);
+
+    th.detach();
     auto minBoardSize = Config::BOARD_SIZE();
     setMinimumSize(minBoardSize, minBoardSize);
     if (!isFullScreen())
@@ -175,7 +178,11 @@ void MainWindow::reloadSize()
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
-    fixSize();
+    QSize newSize = event->size();
+    QSize oldSize = event->oldSize();
+
+    bool isBlowUp = (newSize.width() > oldSize.width()) || (newSize.height() > oldSize.height());
+    fixSize(isBlowUp);
 }
 
 std::vector<point> MainWindow::centerPieces() const
@@ -210,28 +217,52 @@ double MainWindow::getMinWindowSize()
     return minSize - 50;
 }
 
-void MainWindow::fixSize()
+void MainWindow::fixSize(bool isBlowUp)
 {
     double width = size().width();
     double height = size().height();
     auto midX = width / 2;
     auto midY = height / 2;
-    for (double i = 0; i < Config::CHESS_NUMBER; i++)
+
+    auto *animationGroup = new QParallelAnimationGroup(this);
+    for (int i = 0; i < Config::CHESS_NUMBER; i++)
     {
-        for (double j = 0; j < Config::CHESS_NUMBER; j++)
+        for (int j = 0; j < Config::CHESS_NUMBER; j++)
         {
             auto x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING - 0.5;
             auto y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING - 0.5;
-            auto space = Config::BOARD_PIECE_SPACING + 1;
             widgets[i][j]->setMouseOn(false);
+
+            if (isBlowUp)
+            {
+                auto space = Config::BOARD_PIECE_SPACING + 1;
+                widgets[i][j]->setFixedSize(space, space);
+                widgets[i][j]->show();
+            }
+
             auto *animation = new QPropertyAnimation(widgets[i][j].get(), "pos");
             animation->setDuration(200);
             animation->setStartValue(widgets[i][j]->pos());
             animation->setEndValue(QPoint(x, y));
-            animation->start(QAbstractAnimation::DeleteWhenStopped);
+            animationGroup->addAnimation(animation);
+        }
+    }
 
-            widgets[i][j]->setFixedSize(space, space);
-            widgets[i][j]->show();
+    QEventLoop loop;
+    connect(animationGroup, &QParallelAnimationGroup::finished, &loop, &QEventLoop::quit);
+    animationGroup->start();
+    loop.exec();
+
+    if (!isBlowUp)
+    {
+        for (int i = 0; i < Config::CHESS_NUMBER; i++)
+        {
+            for (int j = 0; j < Config::CHESS_NUMBER; j++)
+            {
+                auto space = Config::BOARD_PIECE_SPACING + 1;
+                widgets[i][j]->setFixedSize(space, space);
+                widgets[i][j]->show();
+            }
         }
     }
 }
