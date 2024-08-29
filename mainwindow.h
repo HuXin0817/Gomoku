@@ -23,7 +23,7 @@ protected:
 
 private:
     std::unique_ptr<Board> board;
-    std::vector<std::vector<std::unique_ptr<Sensor>>> widgets;
+    board_sensors widgets;
 
     void reload(const std::vector<point> &moveRecord);
 

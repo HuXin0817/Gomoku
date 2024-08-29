@@ -8,12 +8,16 @@
 #include "board.h"
 #include "common.h"
 
+class Sensor;
+
+using board_sensors = std::vector<std::vector<std::unique_ptr<Sensor>>>;
+
 class Sensor final : public QWidget
 {
     Q_OBJECT
 
 public:
-    Sensor(QWidget *parent, Board *nowBoard, int x, int y, std::vector<std::vector<std::unique_ptr<Sensor>>> *widgets);
+    Sensor(QWidget *parent, Board *nowBoard, int x, int y, board_sensors *widgets);
 
     void flashing(double midValue, int duration);
 
@@ -39,7 +43,7 @@ private:
     bool isPressed = false;
     ChessPlayer pressedPlayer = ChessPlayer::NONE;
     Board *nowBoard;
-    std::vector<std::vector<std::unique_ptr<Sensor>>> *widgets;
+    board_sensors *widgets;
     QGraphicsOpacityEffect opacityEffect;
     QPropertyAnimation animation;
 };

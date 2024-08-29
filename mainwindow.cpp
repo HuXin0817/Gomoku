@@ -4,7 +4,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     board = std::make_unique<Board>();
     reloadSize();
-    setWindowOpacity(0.95);
 
     auto *restartShortcut = new QShortcut(QKeySequence("Ctrl+R"), this);
     auto *undoShortcut = new QShortcut(QKeySequence("Ctrl+Z"), this);
