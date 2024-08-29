@@ -21,6 +21,8 @@ public:
 
     void press();
 
+    void clear();
+
 protected:
     void enterEvent(QEnterEvent *event) override;
 

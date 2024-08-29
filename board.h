@@ -23,6 +23,8 @@ public:
 
     std::vector<point> getMoveRecords() const { return moveRecords; }
 
+    point undo();
+
 private:
     bool gameOver = false;
     ChessPlayer nowPlayer = ChessPlayer::BLACK;

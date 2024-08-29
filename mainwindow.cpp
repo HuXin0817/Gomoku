@@ -68,13 +68,12 @@ void MainWindow::restart() { reload({}); }
 
 void MainWindow::undo()
 {
-    auto moveRecord = board->getMoveRecords();
-    if (moveRecord.empty())
+    if (board->getMoveRecords().empty())
     {
         return;
     }
-    moveRecord.pop_back();
-    reload(moveRecord);
+    auto back = board->undo();
+    widgets[back.x][back.y]->clear();
 }
 
 void MainWindow::addBoardSize()

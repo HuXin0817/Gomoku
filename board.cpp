@@ -123,3 +123,12 @@ bool Board::checkInBoard(int x, int y)
 {
     return x >= 0 && x < Config::CHESS_NUMBER && y >= 0 && y < Config::CHESS_NUMBER;
 }
+
+point Board::undo()
+{
+    auto back = moveRecords.back();
+    moveRecords.pop_back();
+    chessMap[back.x][back.y] = ChessPlayer::NONE;
+    gameOver = false;
+    return back;
+}

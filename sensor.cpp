@@ -148,3 +148,13 @@ void Sensor::press()
     }
     update();
 }
+
+void Sensor::clear()
+{
+    isMouseOn = false;
+    isPressed = false;
+    pressedPlayer = ChessPlayer::NONE;
+    animation.stop();
+    opacityEffect.setOpacity(1);
+    update();
+}
