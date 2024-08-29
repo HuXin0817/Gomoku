@@ -48,4 +48,11 @@ private:
     QPropertyAnimation animation;
 
     void drawShadowPoint(QPainter &painter);
+
+    void drawUpLine(QPainter &painter) {
+        if (x - 1 == 0) {
+            return;
+        }
+
+    }
 };

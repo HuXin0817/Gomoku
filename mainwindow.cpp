@@ -22,11 +22,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 void MainWindow::paintEvent(QPaintEvent *event)
 {
+    QMainWindow::paintEvent(event);
     double width = size().width();
     double height = size().height();
     auto midX = width / 2;
     auto midY = height / 2;
-    QMainWindow::paintEvent(event);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(rect(), BackGroundColor());
@@ -235,8 +235,14 @@ void MainWindow::fixSize()
         {
             auto x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING;
             auto y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING;
-            widgets[i][j]->move(x, y);
             auto space = Config::BOARD_PIECE_SPACING;
+            
+            auto* animation = new QPropertyAnimation(widgets[i][j].get(), "pos");
+            animation->setDuration(200); 
+            animation->setStartValue(widgets[i][j]->pos()); 
+            animation->setEndValue(QPoint(x, y)); 
+            animation->start(QAbstractAnimation::DeleteWhenStopped); 
+
             widgets[i][j]->setFixedSize(space, space);
             widgets[i][j]->show();
         }
