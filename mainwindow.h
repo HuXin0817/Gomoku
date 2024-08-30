@@ -31,20 +31,7 @@ private:
 
     static double getMinWindowSize();
 
-    void fixSize(bool wait);
-
-    void fixWidgetsSize()
-    {
-        for (int i = 0; i < Config::CHESS_NUMBER; i++)
-        {
-            for (int j = 0; j < Config::CHESS_NUMBER; j++)
-            {
-                auto space = Config::BOARD_PIECE_SPACING + 1;
-                widgets[i][j]->setFixedSize(space, space);
-                widgets[i][j]->show();
-            }
-        }
-    }
+    void fixSize();
 
     bool event(QEvent *event) override;
 

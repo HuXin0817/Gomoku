@@ -4,7 +4,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     board = std::make_unique<Board>();
     reloadSize();
-    fixWidgetsSize();
     auto minBoardSize = Config::BOARD_SIZE();
     setMinimumSize(minBoardSize, minBoardSize);
     if (!isFullScreen())
@@ -63,8 +62,7 @@ void MainWindow::addBoardSize()
         return;
     }
     reloadSize();
-    fixWidgetsSize();
-    fixSize(true);
+    fixSize();
 }
 
 void MainWindow::reduceBoardSize()
@@ -73,8 +71,7 @@ void MainWindow::reduceBoardSize()
     {
         Config::BOARD_PIECE_SPACING /= 1.1;
         reloadSize();
-        fixSize(true);
-        fixWidgetsSize();
+        fixSize();
     }
     else
     {
@@ -125,7 +122,7 @@ void MainWindow::reload(const std::vector<point> &moveRecord)
     }
     board->restart();
     reloadSize();
-    fixWidgetsSize();
+    fixSize();
     for (auto [x, y] : moveRecord)
     {
         if (x < Config::CHESS_NUMBER && y < Config::CHESS_NUMBER)
@@ -156,37 +153,25 @@ void MainWindow::reloadSize()
         {
             int j = widgets[i].size();
             widgets[i].emplace_back(std::make_unique<Sensor>(this, board.get(), i, j, &widgets));
-            double x, y;
-            if (i == 0 && j == 0)
-            {
-                x = Config::BOARD_MARGIN() / 2;
-                y = Config::BOARD_MARGIN() / 2;
-            }
-            else if (j == 0)
-            {
-                x = double(widgets[i - 1][j]->pos().x()) + Config::BOARD_PIECE_SPACING - 0.5;
-                y = double(widgets[i - 1][j]->pos().y());
-            }
-            else
-            {
-                x = double(widgets[i][j - 1]->pos().x());
-                y = double(widgets[i][j - 1]->pos().y()) + Config::BOARD_PIECE_SPACING + 0.5;
-            }
-            widgets[i][j]->move(x, y);
+            widgets[i][j]->show();
         }
     }
-    auto minBoardSize = Config::BOARD_SIZE();
-    setMinimumSize(minBoardSize, minBoardSize);
     if (!isFullScreen())
     {
-        resize(minBoardSize, minBoardSize);
+        auto minBoardSize = Config::BOARD_SIZE();
+        setMinimumSize(minBoardSize, minBoardSize);
+        auto *animation = new QPropertyAnimation(this, "size");
+        animation->setDuration(200);
+        animation->setStartValue(size());
+        animation->setEndValue(QSize(minBoardSize, minBoardSize));
+        animation->start();
     }
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
-    fixSize(false);
+    fixSize();
 }
 
 std::vector<point> MainWindow::centerPieces() const
@@ -213,15 +198,15 @@ std::vector<point> MainWindow::centerPieces() const
 
 double MainWindow::getMinWindowSize()
 {
-    QScreen *screen = QGuiApplication::primaryScreen();
-    QRect screenGeometry = screen->geometry();
+    auto *screen = QGuiApplication::primaryScreen();
+    auto screenGeometry = screen->geometry();
     auto screenWidth = screenGeometry.width();
     auto screenHeight = screenGeometry.height();
     auto minSize = std::min(screenHeight, screenWidth);
     return minSize - 50;
 }
 
-void MainWindow::fixSize(bool wait)
+void MainWindow::fixSize()
 {
     double width = size().width();
     double height = size().height();
@@ -237,20 +222,20 @@ void MainWindow::fixSize(bool wait)
             auto y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING - 0.5;
             widgets[i][j]->setMouseOn(false);
 
-            auto *animation = new QPropertyAnimation(widgets[i][j].get(), "pos");
-            animation->setDuration(200);
-            animation->setStartValue(widgets[i][j]->pos());
-            animation->setEndValue(QPoint(x, y));
-            animationGroup->addAnimation(animation);
-        }
-    }
+            auto *posAnimation = new QPropertyAnimation(widgets[i][j].get(), "pos");
+            posAnimation->setDuration(200);
+            posAnimation->setStartValue(widgets[i][j]->pos());
+            posAnimation->setEndValue(QPoint(x, y));
+            animationGroup->addAnimation(posAnimation);
 
-    QEventLoop loop;
-    connect(animationGroup, &QParallelAnimationGroup::finished, &loop, &QEventLoop::quit);
-    animationGroup->start();
-    if (wait)
-    {
-        loop.exec();
+            auto space = Config::BOARD_PIECE_SPACING + 1;
+            auto *sizeAnimation = new QPropertyAnimation(widgets[i][j].get(), "size");
+            sizeAnimation->setDuration(200);
+            sizeAnimation->setStartValue(widgets[i][j]->size());
+            sizeAnimation->setEndValue(QSize(space, space));
+            animationGroup->addAnimation(sizeAnimation);
+            animationGroup->start();
+        }
     }
 }
 
