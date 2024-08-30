@@ -53,7 +53,7 @@ void Sensor::paintEvent(QPaintEvent *event)
         painter.drawEllipse(point, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
         break;
     }
-    case ChessPlayer::WRITE:
+    case ChessPlayer::WHITE:
     {
         drawShadowPoint(painter);
         QRadialGradient gradient(point, BOARD_PIECE_WIDTH);
@@ -137,7 +137,6 @@ void Sensor::press()
     }
     isPressed = true;
     isMouseOn = false;
-    opacityEffect.setOpacity(1);
     pressedPlayer = nowBoard->getNowPlayer();
     nowBoard->addPiece(x, y);
     if (nowBoard->isGameOver())

@@ -1,14 +1,17 @@
 #pragma once
 
-#include "common.h"
+#include "moverecords.h"
+
+#include <QStandardPaths>
 
 #include <unordered_set>
+#include <fstream>
 #include <thread>
 
 class Board
 {
 public:
-    Board() { restart(); }
+    Board() : chessMap(Config::CHESS_NUMBER, std::vector<ChessPlayer>(Config::CHESS_NUMBER)) {}
 
     void addPiece(int x, int y);
 
@@ -20,7 +23,7 @@ public:
 
     std::vector<point> winPieces() const;
 
-    auto getMoveRecords() const { return moveRecords; }
+    auto getMoveRecords() const { return moveRecords.get(); }
 
     point undo();
 
@@ -32,7 +35,7 @@ private:
     bool gameOver = false;
     ChessPlayer nowPlayer = ChessPlayer::BLACK;
     std::vector<std::vector<ChessPlayer>> chessMap;
-    std::vector<point> moveRecords;
+    MoveRecords moveRecords;
 
     bool checkWin(int x, int y) const;
 

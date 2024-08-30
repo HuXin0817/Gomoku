@@ -49,7 +49,7 @@ void Board::addPiece(int x, int y)
     }
     chessMap[x][y] = nowPlayer;
     moveRecords.emplace_back(x, y);
-    nowPlayer = nowPlayer == ChessPlayer::BLACK ? ChessPlayer::WRITE : ChessPlayer::BLACK;
+    nowPlayer = nowPlayer == ChessPlayer::BLACK ? ChessPlayer::WHITE : ChessPlayer::BLACK;
     gameOver = checkWin(x, y);
 }
 
@@ -128,15 +128,16 @@ point Board::undo()
 {
     auto back = moveRecords.back();
     moveRecords.pop_back();
+
     chessMap[back.x][back.y] = ChessPlayer::NONE;
     gameOver = false;
-    if (nowPlayer == ChessPlayer::WRITE)
+    if (nowPlayer == ChessPlayer::WHITE)
     {
         nowPlayer = ChessPlayer::BLACK;
     }
     else
     {
-        nowPlayer = ChessPlayer::WRITE;
+        nowPlayer = ChessPlayer::WHITE;
     }
     return back;
 }
@@ -158,7 +159,7 @@ point Board::getBestPoint() const
 std::unordered_set<point> Board::getNearPoints() const
 {
     std::unordered_set<point> nearPoints;
-    for (auto [x, y] : moveRecords)
+    for (auto [x, y] : moveRecords.get())
     {
         for (int i = -2; i <= 2; i++)
         {

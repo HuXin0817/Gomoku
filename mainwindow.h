@@ -50,9 +50,9 @@ private slots:
 
     void setBlackAIPlayer() { setAIPlayer(ChessPlayer::BLACK); }
 
-    void setWriteAIPlayer() { setAIPlayer(ChessPlayer::WRITE); }
+    void setWriteAIPlayer() { setAIPlayer(ChessPlayer::WHITE); }
 
     void setAIPlayer(ChessPlayer player);
 
-    void notifyAI();
+    void notifyAIPlayer();
 };

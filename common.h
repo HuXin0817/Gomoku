@@ -8,7 +8,7 @@ enum class ChessPlayer
 {
     NONE,
     BLACK,
-    WRITE
+    WHITE
 };
 
 struct point
@@ -26,7 +26,7 @@ struct std::hash<point>
 {
     std::size_t operator()(const point &p) const
     {
-        return *((std::size_t *)(&p));
+        return reinterpret_cast<std::size_t>(&p);
     }
 };
 
@@ -64,7 +64,7 @@ struct Config
     static inline std::unordered_map<ChessPlayer, bool> AI_CHESS_PLAYER;
 };
 
-static constexpr auto LineColor = QColor(128, 128, 128);
+static constexpr QColor LineColor = {128, 128, 128};
 
 inline bool IS_DARK_THEME()
 {
