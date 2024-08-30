@@ -11,12 +11,11 @@ class Sensor;
 
 using board_sensors = std::vector<std::vector<std::unique_ptr<Sensor>>>;
 
-class Sensor final : public QWidget
-{
-    Q_OBJECT
+class Sensor final : public QWidget {
+Q_OBJECT
 
 public:
-    Sensor(QWidget *parent, Board *nowBoard, int x, int y, board_sensors *widgets);
+    Sensor(QWidget *parent, Board *board, int x, int y, board_sensors *s);
 
     void flashing();
 
@@ -44,9 +43,9 @@ private:
     bool isPressed = false;
     ChessPlayer pressedPlayer = ChessPlayer::NONE;
     Board *nowBoard;
-    board_sensors *widgets;
-    QGraphicsOpacityEffect opacityEffect;
-    QPropertyAnimation animation;
+    board_sensors *sensors;
+    QGraphicsOpacityEffect *opacityEffect;
+    QPropertyAnimation *opacityAnimation;
 
     void drawShadowPoint(QPainter &painter);
 

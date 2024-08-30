@@ -9,9 +9,8 @@
 
 #define Shortcut(key) new QShortcut(QKeySequence(key), this), &QShortcut::activated, this
 
-class MainWindow final : public QMainWindow
-{
-    Q_OBJECT
+class MainWindow final : public QMainWindow {
+Q_OBJECT
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
@@ -23,7 +22,7 @@ protected:
 
 private:
     std::unique_ptr<Board> board;
-    board_sensors widgets;
+    board_sensors sensors;
 
     void reload(const std::vector<point> &moveRecord = {});
 
@@ -36,6 +35,7 @@ private:
     void handleResizeEvent();
 
 private slots:
+
     void undo();
 
     void addBoardSize();

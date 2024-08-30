@@ -1,14 +1,15 @@
 #include "sensor.h"
 
-Sensor::Sensor(QWidget *parent, Board *nowBoard, int x, int y, board_sensors *widgets)
-    : QWidget(parent), x(x), y(y), nowBoard(nowBoard), widgets(widgets), opacityEffect(this), animation(&opacityEffect, "opacity", this)
-{
-    setGraphicsEffect(&opacityEffect);
-    opacityEffect.setOpacity(1);
+Sensor::Sensor(QWidget *parent, Board *board, int x, int y, board_sensors *s) : QWidget(parent), x(x), y(y) {
+    nowBoard = board;
+    sensors = s;
+    opacityEffect = new QGraphicsOpacityEffect(this);
+    opacityAnimation = new QPropertyAnimation(opacityEffect, "opacity", this);
+    setGraphicsEffect(opacityEffect);
+    opacityEffect->setOpacity(1);
 }
 
-void Sensor::paintEvent(QPaintEvent *event)
-{
+void Sensor::paintEvent(QPaintEvent *event) {
     QWidget::paintEvent(event);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
@@ -18,19 +19,16 @@ void Sensor::paintEvent(QPaintEvent *event)
     drawRightLine(painter);
     drawStarPoint(painter);
 
-    if (!isPressed && !isMouseOn)
-    {
+    if (!isPressed && !isMouseOn) {
         return;
     }
 
     ChessPlayer player;
-    if (isMouseOn)
-    {
+    if (isMouseOn) {
         player = nowBoard->getNowPlayer();
         painter.setOpacity(0.7);
     }
-    if (isPressed)
-    {
+    if (isPressed) {
         player = pressedPlayer;
     }
 
@@ -38,113 +36,95 @@ void Sensor::paintEvent(QPaintEvent *event)
     QPointF point(BOARD_PIECE_SPACING / 2, BOARD_PIECE_SPACING / 2);
 
     auto BOARD_PIECE_WIDTH = Config::BOARD_PIECE_WIDTH(BOARD_PIECE_SPACING);
-    switch (player)
-    {
-    case ChessPlayer::NONE:
-        break;
-    case ChessPlayer::BLACK:
-    {
-        drawShadowPoint(painter);
-        QRadialGradient gradient(point, BOARD_PIECE_WIDTH);
-        gradient.setColorAt(0, BlackMidPieceColor());
-        gradient.setColorAt(1, BlackFringePieceColor());
-        painter.setBrush(gradient);
-        painter.setPen(QPen(BlackFringePieceColor(), 0));
-        painter.drawEllipse(point, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
-        break;
-    }
-    case ChessPlayer::WHITE:
-    {
-        drawShadowPoint(painter);
-        QRadialGradient gradient(point, BOARD_PIECE_WIDTH);
-        gradient.setColorAt(0, WriteMidPieceColor());
-        gradient.setColorAt(1, WriteFringePieceColor());
-        painter.setBrush(gradient);
-        painter.setPen(QPen(WriteEdgePieceColor(), 0));
-        painter.drawEllipse(point, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
-        break;
-    }
+    switch (player) {
+        case ChessPlayer::NONE:
+            break;
+        case ChessPlayer::BLACK: {
+            drawShadowPoint(painter);
+            QRadialGradient gradient(point, BOARD_PIECE_WIDTH);
+            gradient.setColorAt(0, BlackMidPieceColor());
+            gradient.setColorAt(1, BlackFringePieceColor());
+            painter.setBrush(gradient);
+            painter.setPen(QPen(BlackFringePieceColor(), 0));
+            painter.drawEllipse(point, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
+            break;
+        }
+        case ChessPlayer::WHITE: {
+            drawShadowPoint(painter);
+            QRadialGradient gradient(point, BOARD_PIECE_WIDTH);
+            gradient.setColorAt(0, WriteMidPieceColor());
+            gradient.setColorAt(1, WriteFringePieceColor());
+            painter.setBrush(gradient);
+            painter.setPen(QPen(WriteEdgePieceColor(), 0));
+            painter.drawEllipse(point, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
+            break;
+        }
     }
 }
 
-void Sensor::enterEvent(QEnterEvent *event)
-{
+void Sensor::enterEvent(QEnterEvent *event) {
     QWidget::enterEvent(event);
-    if (Config::AI_CHESS_PLAYER[nowBoard->getNowPlayer()])
-    {
+    if (Config::AI_CHESS_PLAYER[nowBoard->getNowPlayer()]) {
         return;
     }
-    if (isPressed)
-    {
+    if (isPressed) {
         return;
     }
-    if (!nowBoard->judgeIsPos(x, y))
-    {
+    if (!nowBoard->judgeIsPos(x, y)) {
         return;
     }
     isMouseOn = true;
     update();
 }
 
-void Sensor::leaveEvent(QEvent *event)
-{
+void Sensor::leaveEvent(QEvent *event) {
     QWidget::leaveEvent(event);
-    if (Config::AI_CHESS_PLAYER[nowBoard->getNowPlayer()])
-    {
+    if (Config::AI_CHESS_PLAYER[nowBoard->getNowPlayer()]) {
         return;
     }
     isMouseOn = false;
     update();
 }
 
-void Sensor::mousePressEvent(QMouseEvent *event)
-{
+void Sensor::mousePressEvent(QMouseEvent *event) {
     QWidget::mousePressEvent(event);
-    if (Config::AI_CHESS_PLAYER[nowBoard->getNowPlayer()])
-    {
+    if (Config::AI_CHESS_PLAYER[nowBoard->getNowPlayer()]) {
         QApplication::beep();
         return;
     }
     press();
 }
 
-void Sensor::flashing()
-{
-    animation.setDuration(1500);
-    animation.setKeyValueAt(0.0, 1.0);
-    animation.setKeyValueAt(0.5, 0.4);
-    animation.setKeyValueAt(1.0, 1.0);
-    animation.setEasingCurve(QEasingCurve::Linear);
-    animation.setLoopCount(-1);
-    animation.start();
+void Sensor::flashing() {
+    opacityAnimation->setDuration(1500);
+    opacityAnimation->setKeyValueAt(0.0, 1.0);
+    opacityAnimation->setKeyValueAt(0.5, 0.4);
+    opacityAnimation->setKeyValueAt(1.0, 1.0);
+    opacityAnimation->setEasingCurve(QEasingCurve::Linear);
+    opacityAnimation->setLoopCount(-1);
+    opacityAnimation->start();
 }
 
-void Sensor::stopFlashing()
-{
-    animation.stop();
-    opacityEffect.setOpacity(1);
+void Sensor::stopFlashing() {
+    opacityAnimation->stop();
+    opacityEffect->setOpacity(1);
 }
 
-void Sensor::press()
-{
-    if (nowBoard->isGameOver())
-    {
+void Sensor::press() {
+    if (nowBoard->isGameOver()) {
         return;
     }
-    if (isPressed)
-    {
+    if (isPressed) {
         return;
     }
     isPressed = true;
     isMouseOn = false;
     pressedPlayer = nowBoard->getNowPlayer();
     nowBoard->addPiece(x, y);
-    if (nowBoard->isGameOver())
-    {
+    if (nowBoard->isGameOver()) {
         auto pieces = nowBoard->winPieces();
-        for (auto [px, py] : pieces)
-        {
-            (*widgets)[px][py]->flashing();
+        for (auto [px, py]: pieces) {
+            (*sensors)[px][py]->flashing();
         }
     }
     update();
@@ -152,41 +132,35 @@ void Sensor::press()
     th.detach();
 }
 
-void Sensor::clear()
-{
+void Sensor::clear() {
     isMouseOn = false;
     isPressed = false;
     pressedPlayer = ChessPlayer::NONE;
-    animation.stop();
-    opacityEffect.setOpacity(1);
+    opacityAnimation->stop();
+    opacityEffect->setOpacity(1);
     update();
 }
 
-void Sensor::drawShadowPoint(QPainter &painter)
-{
-    if (IS_DARK_THEME())
-    {
+void Sensor::drawShadowPoint(QPainter &painter) {
+    if (IS_DARK_THEME()) {
         return;
     }
     double BOARD_PIECE_SPACING = width();
-    double pos = BOARD_PIECE_SPACING / 2 * 1.05;
-    QPointF point(pos, pos);
+    auto shadowPointPos = BOARD_PIECE_SPACING / 2 * 1.05;
+    QPointF point(shadowPointPos, shadowPointPos);
     auto BOARD_PIECE_WIDTH = Config::BOARD_PIECE_WIDTH(BOARD_PIECE_SPACING);
     painter.setPen(QPen(LineColor, 0));
     painter.setBrush(LineColor);
     painter.drawEllipse(point, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
 }
 
-void Sensor::drawStarPoint(QPainter &painter)
-{
+void Sensor::drawStarPoint(QPainter &painter) {
     int c = 0;
-    for (auto p : Config::StarPositions())
-    {
+    for (auto p: Config::StarPositions()) {
         c += p == x;
         c += p == y;
     }
-    if (c != 2)
-    {
+    if (c != 2) {
         return;
     }
     painter.setPen(QPen(LineColor, Config::BOARD_LINE_WIDTH()));
@@ -197,10 +171,8 @@ void Sensor::drawStarPoint(QPainter &painter)
     painter.drawEllipse(point, Config::BOARD_STAR_POINT_WIDTH(), Config::BOARD_STAR_POINT_WIDTH());
 }
 
-void Sensor::drawRightLine(QPainter &painter)
-{
-    if (x + 1 == Config::CHESS_NUMBER)
-    {
+void Sensor::drawRightLine(QPainter &painter) {
+    if (x + 1 == Config::CHESS_NUMBER) {
         return;
     }
     double w = width();
@@ -211,10 +183,8 @@ void Sensor::drawRightLine(QPainter &painter)
     painter.drawLine(point1, point2);
 }
 
-void Sensor::drawLeftLine(QPainter &painter)
-{
-    if (x == 0)
-    {
+void Sensor::drawLeftLine(QPainter &painter) {
+    if (x == 0) {
         return;
     }
     double w = width();
@@ -225,10 +195,8 @@ void Sensor::drawLeftLine(QPainter &painter)
     painter.drawLine(point1, point2);
 }
 
-void Sensor::drawDownLine(QPainter &painter)
-{
-    if (y + 1 == Config::CHESS_NUMBER)
-    {
+void Sensor::drawDownLine(QPainter &painter) {
+    if (y + 1 == Config::CHESS_NUMBER) {
         return;
     }
     double w = width();
@@ -239,10 +207,8 @@ void Sensor::drawDownLine(QPainter &painter)
     painter.drawLine(point1, point2);
 }
 
-void Sensor::drawUpLine(QPainter &painter)
-{
-    if (y == 0)
-    {
+void Sensor::drawUpLine(QPainter &painter) {
+    if (y == 0) {
         return;
     }
     double w = width();
@@ -253,11 +219,9 @@ void Sensor::drawUpLine(QPainter &painter)
     painter.drawLine(point1, point2);
 }
 
-void Sensor::notifyAI()
-{
-    if (Config::AI_CHESS_PLAYER[nowBoard->getNowPlayer()])
-    {
+void Sensor::notifyAI() {
+    if (Config::AI_CHESS_PLAYER[nowBoard->getNowPlayer()]) {
         auto nextPoint = nowBoard->getBestPoint();
-        (*widgets)[nextPoint.x][nextPoint.y]->press();
+        (*sensors)[nextPoint.x][nextPoint.y]->press();
     }
 }

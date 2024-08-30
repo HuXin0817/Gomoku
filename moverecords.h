@@ -6,24 +6,20 @@
 
 #include <QStandardPaths>
 
-class MoveRecords
-{
+class MoveRecords {
     static inline auto dir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).toStdString() + "/.gomoku";
 
     static inline auto moveRecordsDataFilePath = dir + "/move_records.data";
 
 public:
-    MoveRecords()
-    {
+    MoveRecords() {
         auto filename = moveRecordsDataFilePath;
         std::ifstream file(filename, std::ios::binary);
-        if (!file)
-        {
+        if (!file) {
             std::filesystem::create_directory(dir);
             return;
         }
-        while (!file.eof())
-        {
+        while (!file.eof()) {
             int x, y;
             file >> x >> y;
             moveRecords.emplace_back(x, y);
@@ -32,22 +28,19 @@ public:
 
     auto back() const { return moveRecords.back(); }
 
-    void pop_back()
-    {
+    void pop_back() {
         moveRecords.pop_back();
         saveIntoDisk();
     }
 
-    void emplace_back(int x, int y)
-    {
+    void emplace_back(int x, int y) {
         moveRecords.emplace_back(x, y);
         saveIntoDisk();
     }
 
     const std::vector<point> get() const { return moveRecords; }
 
-    void clear()
-    {
+    void clear() {
         moveRecords.clear();
         saveIntoDisk();
     }
@@ -55,12 +48,10 @@ public:
 private:
     std::vector<point> moveRecords;
 
-    void saveIntoDisk()
-    {
+    void saveIntoDisk() {
         auto filename = moveRecordsDataFilePath;
         std::ofstream file(filename, std::ios::binary);
-        for (auto [x, y] : moveRecords)
-        {
+        for (auto [x, y]: moveRecords) {
             file << x << " " << y << std::endl;
         }
     }

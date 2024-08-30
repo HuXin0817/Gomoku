@@ -8,8 +8,7 @@
 #include <fstream>
 #include <thread>
 
-class Board
-{
+class Board {
 public:
     Board() : chessMap(Config::CHESS_NUMBER, std::vector<ChessPlayer>(Config::CHESS_NUMBER)) {}
 
