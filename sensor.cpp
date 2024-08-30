@@ -70,6 +70,10 @@ void Sensor::paintEvent(QPaintEvent *event)
 void Sensor::enterEvent(QEnterEvent *event)
 {
     QWidget::enterEvent(event);
+    if (Config::AI_CHESS_PLAYER[nowBoard->getNowPlayer()])
+    {
+        return;
+    }
     if (isPressed)
     {
         return;
@@ -85,6 +89,10 @@ void Sensor::enterEvent(QEnterEvent *event)
 void Sensor::leaveEvent(QEvent *event)
 {
     QWidget::leaveEvent(event);
+    if (Config::AI_CHESS_PLAYER[nowBoard->getNowPlayer()])
+    {
+        return;
+    }
     isMouseOn = false;
     update();
 }
@@ -92,6 +100,11 @@ void Sensor::leaveEvent(QEvent *event)
 void Sensor::mousePressEvent(QMouseEvent *event)
 {
     QWidget::mousePressEvent(event);
+    if (Config::AI_CHESS_PLAYER[nowBoard->getNowPlayer()])
+    {
+        QApplication::beep();
+        return;
+    }
     press();
 }
 
@@ -122,10 +135,6 @@ void Sensor::press()
     {
         return;
     }
-    if (!nowBoard->judgeIsPos(x, y))
-    {
-        return;
-    }
     isPressed = true;
     isMouseOn = false;
     opacityEffect.setOpacity(1);
@@ -140,6 +149,8 @@ void Sensor::press()
         }
     }
     update();
+    std::thread th(&Sensor::notifyAI, this);
+    th.detach();
 }
 
 void Sensor::clear()
@@ -179,7 +190,6 @@ void Sensor::drawStarPoint(QPainter &painter)
     {
         return;
     }
-
     painter.setPen(QPen(LineColor, Config::BOARD_LINE_WIDTH()));
     painter.setBrush(LineColor);
     double w = width();
@@ -242,4 +252,13 @@ void Sensor::drawUpLine(QPainter &painter)
     QPointF point2(w / 2, h / 2);
     painter.setPen(QPen(LineColor, Config::BOARD_LINE_WIDTH()));
     painter.drawLine(point1, point2);
+}
+
+void Sensor::notifyAI()
+{
+    if (Config::AI_CHESS_PLAYER[nowBoard->getNowPlayer()])
+    {
+        auto nextPoint = nowBoard->getBestPoint();
+        (*widgets)[nextPoint.x][nextPoint.y]->press();
+    }
 }

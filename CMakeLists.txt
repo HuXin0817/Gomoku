@@ -15,8 +15,7 @@ find_package(Qt6 COMPONENTS
 add_executable(gomoku main.cpp
         mainwindow.cpp
         board.cpp
-        sensor.cpp
-        common.cpp)
+        sensor.cpp)
 
 target_link_libraries(gomoku
         Qt6::Core

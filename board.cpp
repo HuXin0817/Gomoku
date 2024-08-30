@@ -148,3 +148,45 @@ void Board::restart()
     chessMap = {size_t(Config::CHESS_NUMBER), std::vector<ChessPlayer>(Config::CHESS_NUMBER)};
     moveRecords.clear();
 }
+
+point Board::getBestPoint() const
+{
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    return getRandomFromNearPoints();
+}
+
+std::unordered_set<point> Board::getNearPoints() const
+{
+    std::unordered_set<point> nearPoints;
+    for (auto [x, y] : moveRecords)
+    {
+        for (int i = -2; i <= 2; i++)
+        {
+            for (int j = -2; j <= 2; j++)
+            {
+                if (!checkInBoard(x + i, y + j))
+                {
+                    continue;
+                }
+                if (chessMap[x + i][y + j] == ChessPlayer::NONE)
+                {
+                    nearPoints.emplace(x + i, y + j);
+                }
+            }
+        }
+    }
+    return nearPoints;
+}
+
+point Board::getRandomFromNearPoints() const
+{
+    auto nearPiecesSet = getNearPoints();
+    std::vector<point> nearPieces(nearPiecesSet.begin(), nearPiecesSet.end());
+    point point(Config::CHESS_NUMBER / 2, Config::CHESS_NUMBER / 2);
+    if (!nearPieces.empty())
+    {
+        size_t idx = random() % nearPieces.size();
+        point = nearPieces[idx];
+    }
+    return point;
+}

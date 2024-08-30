@@ -7,6 +7,8 @@
 
 #include "sensor.h"
 
+#define Shortcut(key) new QShortcut(QKeySequence(key), this), &QShortcut::activated, this
+
 class MainWindow final : public QMainWindow
 {
     Q_OBJECT
@@ -31,14 +33,10 @@ private:
 
     static double getMinWindowSize();
 
-    void fixSize();
-
-    bool event(QEvent *event) override;
+    void handleResizeEvent();
 
 private slots:
     void undo();
-
-    void restart() { reload(); }
 
     void addBoardSize();
 
@@ -47,4 +45,14 @@ private slots:
     void addChessNumber();
 
     void reduceChessNumber();
+
+    void restart();
+
+    void setBlackAIPlayer() { setAIPlayer(ChessPlayer::BLACK); }
+
+    void setWriteAIPlayer() { setAIPlayer(ChessPlayer::WRITE); }
+
+    void setAIPlayer(ChessPlayer player);
+
+    void notifyAI();
 };

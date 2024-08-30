@@ -2,6 +2,14 @@
 
 #include <QApplication>
 #include <QtGui/qpalette.h>
+#include <unordered_map>
+
+enum class ChessPlayer
+{
+    NONE,
+    BLACK,
+    WRITE
+};
 
 struct point
 {
@@ -16,16 +24,17 @@ struct point
 template <>
 struct std::hash<point>
 {
-    std::size_t operator()(const point &p) const;
+    std::size_t operator()(const point &p) const
+    {
+        return *((std::size_t *)(&p));
+    }
 };
 
 struct Config
 {
-    static double CHESS_NUMBER;
-
-    static double BOARD_PIECE_SPACING;
-
-    static int WIN_PIECE_NUMBER;
+    static inline int WIN_PIECE_NUMBER = 5;
+    static inline double CHESS_NUMBER = 15;
+    static inline double BOARD_PIECE_SPACING = 36.0;
 
     static auto BOARD_LINE_WIDTH() { return BOARD_PIECE_SPACING / 20.0; }
 
@@ -39,52 +48,58 @@ struct Config
 
     static auto BOARD_SIZE() { return BOARD_MARGIN() * 2 + BOARD_PIECE_SPACING * (CHESS_NUMBER - 1); }
 
-    static std::vector<double> StarPositions();
+    static std::vector<double> StarPositions()
+    {
+        double starPos = int(CHESS_NUMBER / 5);
+        if (starPos < 2)
+        {
+            return {(CHESS_NUMBER - 1) / 2};
+        }
+        else
+        {
+            return {starPos, (CHESS_NUMBER - 1) / 2, CHESS_NUMBER - starPos - 1};
+        }
+    }
+
+    static inline std::unordered_map<ChessPlayer, bool> AI_CHESS_PLAYER;
 };
 
 static constexpr auto LineColor = QColor(128, 128, 128);
 
-static bool IS_DARK_THEME()
+inline bool IS_DARK_THEME()
 {
     return qApp->palette().color(QPalette::Window).lightness() < 128;
 }
 
-static QColor BackGroundColor()
+inline QColor BackGroundColor()
 {
     return IS_DARK_THEME() ? QColor(60, 60, 60) : QColor(205, 205, 205);
 }
 
-static QColor BlackFringePieceColor()
+inline QColor BlackFringePieceColor()
 {
     return IS_DARK_THEME() ? QColor(30, 30, 30) : QColor(40, 40, 40);
 }
 
-static QColor BlackMidPieceColor()
+inline QColor BlackMidPieceColor()
 {
     int rgb = BlackFringePieceColor().red() + 30;
     return {rgb, rgb, rgb};
 }
 
-static QColor WriteFringePieceColor()
+inline QColor WriteFringePieceColor()
 {
     return IS_DARK_THEME() ? QColor(165, 165, 165) : QColor(205, 205, 205);
 }
 
-static QColor WriteMidPieceColor()
+inline QColor WriteMidPieceColor()
 {
     int rgb = WriteFringePieceColor().red() + 30;
     return {rgb, rgb, rgb};
 }
 
-static QColor WriteEdgePieceColor()
+inline QColor WriteEdgePieceColor()
 {
     int rgb = WriteFringePieceColor().red() - 20;
     return {rgb, rgb, rgb};
 }
-
-enum class ChessPlayer
-{
-    NONE,
-    BLACK,
-    WRITE
-};

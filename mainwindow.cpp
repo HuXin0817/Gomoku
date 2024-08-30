@@ -1,29 +1,17 @@
 #include "mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), board(std::make_unique<Board>())
 {
-    board = std::make_unique<Board>();
     reloadSize();
-    auto minBoardSize = Config::BOARD_SIZE();
-    setMinimumSize(minBoardSize, minBoardSize);
-    if (!isFullScreen())
-    {
-        resize(minBoardSize, minBoardSize);
-    }
 
-    auto *restartShortcut = new QShortcut(QKeySequence("Ctrl+R"), this);
-    auto *undoShortcut = new QShortcut(QKeySequence("Ctrl+Z"), this);
-    auto *addBoardSizeShortcut = new QShortcut(QKeySequence("Ctrl+Up"), this);
-    auto *reduceBoardSizeShortcut = new QShortcut(QKeySequence("Ctrl+Down"), this);
-    auto *addChessNumberShortcut = new QShortcut(QKeySequence("Ctrl+Right"), this);
-    auto *reduceChessNumberShortcut = new QShortcut(QKeySequence("Ctrl+Left"), this);
-
-    connect(restartShortcut, &QShortcut::activated, this, &MainWindow::restart);
-    connect(undoShortcut, &QShortcut::activated, this, &MainWindow::undo);
-    connect(addBoardSizeShortcut, &QShortcut::activated, this, &MainWindow::addBoardSize);
-    connect(reduceBoardSizeShortcut, &QShortcut::activated, this, &MainWindow::reduceBoardSize);
-    connect(addChessNumberShortcut, &QShortcut::activated, this, &MainWindow::addChessNumber);
-    connect(reduceChessNumberShortcut, &QShortcut::activated, this, &MainWindow::reduceChessNumber);
+    connect(Shortcut("Ctrl+R"), &MainWindow::restart);
+    connect(Shortcut("Ctrl+Z"), &MainWindow::undo);
+    connect(Shortcut("Ctrl+Up"), &MainWindow::addBoardSize);
+    connect(Shortcut("Ctrl+Down"), &MainWindow::reduceBoardSize);
+    connect(Shortcut("Ctrl+Right"), &MainWindow::addChessNumber);
+    connect(Shortcut("Ctrl+Left"), &MainWindow::reduceChessNumber);
+    connect(Shortcut("Ctrl+1"), &MainWindow::setBlackAIPlayer);
+    connect(Shortcut("Ctrl+2"), &MainWindow::setWriteAIPlayer);
 }
 
 void MainWindow::paintEvent(QPaintEvent *event)
@@ -37,6 +25,7 @@ void MainWindow::undo()
 {
     if (board->getMoveRecords().empty())
     {
+        QApplication::beep();
         return;
     }
     if (board->isGameOver())
@@ -49,6 +38,7 @@ void MainWindow::undo()
     }
     auto back = board->undo();
     widgets[back.x][back.y]->clear();
+    notifyAI();
 }
 
 void MainWindow::addBoardSize()
@@ -62,7 +52,6 @@ void MainWindow::addBoardSize()
         return;
     }
     reloadSize();
-    fixSize();
 }
 
 void MainWindow::reduceBoardSize()
@@ -71,7 +60,6 @@ void MainWindow::reduceBoardSize()
     {
         Config::BOARD_PIECE_SPACING /= 1.1;
         reloadSize();
-        fixSize();
     }
     else
     {
@@ -122,7 +110,6 @@ void MainWindow::reload(const std::vector<point> &moveRecord)
     }
     board->restart();
     reloadSize();
-    fixSize();
     for (auto [x, y] : moveRecord)
     {
         if (x < Config::CHESS_NUMBER && y < Config::CHESS_NUMBER)
@@ -158,20 +145,21 @@ void MainWindow::reloadSize()
     }
     if (!isFullScreen())
     {
-        auto minBoardSize = Config::BOARD_SIZE();
-        setMinimumSize(minBoardSize, minBoardSize);
+        setMinimumSize(Config::BOARD_SIZE(), Config::BOARD_SIZE());
         auto *animation = new QPropertyAnimation(this, "size");
-        animation->setDuration(200);
+        animation->setDuration(150);
+        animation->setEasingCurve(QEasingCurve::OutQuad);
         animation->setStartValue(size());
-        animation->setEndValue(QSize(minBoardSize, minBoardSize));
+        animation->setEndValue(minimumSize());
         animation->start();
     }
+    handleResizeEvent();
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
-    fixSize();
+    handleResizeEvent();
 }
 
 std::vector<point> MainWindow::centerPieces() const
@@ -206,7 +194,7 @@ double MainWindow::getMinWindowSize()
     return minSize - 50;
 }
 
-void MainWindow::fixSize()
+void MainWindow::handleResizeEvent()
 {
     double width = size().width();
     double height = size().height();
@@ -223,27 +211,48 @@ void MainWindow::fixSize()
             widgets[i][j]->setMouseOn(false);
 
             auto *posAnimation = new QPropertyAnimation(widgets[i][j].get(), "pos");
-            posAnimation->setDuration(200);
+            posAnimation->setDuration(500);
             posAnimation->setStartValue(widgets[i][j]->pos());
             posAnimation->setEndValue(QPoint(x, y));
+            posAnimation->setEasingCurve(QEasingCurve::OutQuad);
             animationGroup->addAnimation(posAnimation);
 
             auto space = Config::BOARD_PIECE_SPACING + 1;
             auto *sizeAnimation = new QPropertyAnimation(widgets[i][j].get(), "size");
-            sizeAnimation->setDuration(200);
+            sizeAnimation->setDuration(500);
             sizeAnimation->setStartValue(widgets[i][j]->size());
             sizeAnimation->setEndValue(QSize(space, space));
+            sizeAnimation->setEasingCurve(QEasingCurve::OutQuad);
             animationGroup->addAnimation(sizeAnimation);
             animationGroup->start();
         }
     }
 }
 
-bool MainWindow::event(QEvent *event)
+void MainWindow::notifyAI()
 {
-    if (event->type() == QEvent::ApplicationPaletteChange)
+    if (Config::AI_CHESS_PLAYER[board->getNowPlayer()])
     {
-        update();
+        auto point = board->getBestPoint();
+        widgets[point.x][point.y]->press();
     }
-    return QMainWindow::event(event);
+}
+
+void MainWindow::setAIPlayer(ChessPlayer player)
+{
+    if (Config::AI_CHESS_PLAYER[player])
+    {
+        Config::AI_CHESS_PLAYER[player] = false;
+    }
+    else
+    {
+        Config::AI_CHESS_PLAYER[player] = true;
+        notifyAI();
+    }
+}
+
+void MainWindow::restart()
+{
+    reload();
+    notifyAI();
 }

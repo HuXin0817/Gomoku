@@ -2,6 +2,9 @@
 
 #include "common.h"
 
+#include <unordered_set>
+#include <thread>
+
 class Board
 {
 public:
@@ -23,6 +26,8 @@ public:
 
     void restart();
 
+    point getBestPoint() const;
+
 private:
     bool gameOver = false;
     ChessPlayer nowPlayer = ChessPlayer::BLACK;
@@ -36,4 +41,8 @@ private:
     static bool checkInBoard(int x, int y);
 
     bool findOne(int x, int y, int dx, int dy, std::vector<point> &pos) const;
+
+    std::unordered_set<point> getNearPoints() const;
+
+    point getRandomFromNearPoints() const;
 };

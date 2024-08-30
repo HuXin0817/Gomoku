@@ -59,4 +59,6 @@ private:
     void drawRightLine(QPainter &painter);
 
     void drawStarPoint(QPainter &painter);
+
+    void notifyAI();
 };
