@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), board(std::make_unique<Board>()) {
+    setWindowTitle("Gomoku");
     reload(board->getMoveRecords());
 
     connect(Shortcut("Ctrl+R"), &MainWindow::restart);
