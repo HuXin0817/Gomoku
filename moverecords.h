@@ -38,7 +38,7 @@ public:
         saveIntoDisk();
     }
 
-    const std::vector<point> get() const { return moveRecords; }
+    auto get() const { return moveRecords; }
 
     void clear() {
         moveRecords.clear();
