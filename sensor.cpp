@@ -38,7 +38,7 @@ void Sensor::paintEvent(QPaintEvent *event)
     }
 
     double BOARD_PIECE_SPACING = width();
-    QPointF point(BOARD_PIECE_SPACING / 2, BOARD_PIECE_SPACING / 2);
+    QPointF p(BOARD_PIECE_SPACING / 2, BOARD_PIECE_SPACING / 2);
 
     auto BOARD_PIECE_WIDTH = Config::BOARD_PIECE_WIDTH(BOARD_PIECE_SPACING);
     switch (player)
@@ -48,23 +48,23 @@ void Sensor::paintEvent(QPaintEvent *event)
     case ChessPlayer::BLACK:
     {
         drawShadowPoint(painter);
-        QRadialGradient gradient(point, BOARD_PIECE_WIDTH);
+        QRadialGradient gradient(p, BOARD_PIECE_WIDTH);
         gradient.setColorAt(0, BlackMidPieceColor());
         gradient.setColorAt(1, BlackFringePieceColor());
         painter.setBrush(gradient);
         painter.setPen(QPen(BlackFringePieceColor(), 0));
-        painter.drawEllipse(point, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
+        painter.drawEllipse(p, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
         break;
     }
     case ChessPlayer::WHITE:
     {
         drawShadowPoint(painter);
-        QRadialGradient gradient(point, BOARD_PIECE_WIDTH);
+        QRadialGradient gradient(p, BOARD_PIECE_WIDTH);
         gradient.setColorAt(0, WriteMidPieceColor());
         gradient.setColorAt(1, WriteFringePieceColor());
         painter.setBrush(gradient);
         painter.setPen(QPen(WriteEdgePieceColor(), 0));
-        painter.drawEllipse(point, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
+        painter.drawEllipse(p, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
         break;
     }
     }
