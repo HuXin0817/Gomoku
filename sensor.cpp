@@ -196,8 +196,7 @@ void Sensor::drawStarPoint(QPainter &painter)
     painter.setBrush(LineColor);
     double w = width();
     double h = height();
-    QPointF point(w / 2, h / 2);
-    painter.drawEllipse(point, Config::BOARD_STAR_POINT_WIDTH(), Config::BOARD_STAR_POINT_WIDTH());
+    painter.drawEllipse(QPointF(w / 2, h / 2), Config::BOARD_STAR_POINT_WIDTH(), Config::BOARD_STAR_POINT_WIDTH());
 }
 
 void Sensor::drawRightLine(QPainter &painter)
