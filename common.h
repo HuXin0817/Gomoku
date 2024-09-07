@@ -26,7 +26,7 @@ struct std::hash<Point>
 {
     std::size_t operator()(const Point &p) const
     {
-        return reinterpret_cast<std::size_t>(&p);
+        return (std::size_t(p.x) << (sizeof(std::size_t) / 2)) + p.y;
     }
 };
 

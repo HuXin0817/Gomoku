@@ -1,6 +1,6 @@
 #include "sensor.h"
 
-Sensor::Sensor(QWidget *parent, Board *board, int x, int y, board_sensors *s) : QWidget(parent), x(x), y(y)
+Sensor::Sensor(QWidget *parent, Board *board, int x, int y, board_sensors *s) : QWidget(parent), point(x, y)
 {
     nowBoard = board;
     sensors = s;
@@ -81,7 +81,7 @@ void Sensor::enterEvent(QEnterEvent *event)
     {
         return;
     }
-    if (!nowBoard->judgeIsPos(x, y))
+    if (!nowBoard->judgeIsPos(point.x, point.y))
     {
         return;
     }
@@ -141,7 +141,7 @@ void Sensor::press()
     isPressed = true;
     isMouseOn = false;
     pressedPlayer = nowBoard->getNowPlayer();
-    nowBoard->addPiece(x, y);
+    nowBoard->addPiece(point.x, point.y);
     if (nowBoard->isGameOver())
     {
         auto pieces = nowBoard->winPieces();
@@ -185,8 +185,8 @@ void Sensor::drawStarPoint(QPainter &painter)
     int c = 0;
     for (auto p : Config::StarPositions())
     {
-        c += p == x;
-        c += p == y;
+        c += p == point.x;
+        c += p == point.y;
     }
     if (c != 2)
     {
@@ -202,7 +202,7 @@ void Sensor::drawStarPoint(QPainter &painter)
 
 void Sensor::drawRightLine(QPainter &painter)
 {
-    if (x + 1 == Config::CHESS_NUMBER)
+    if (point.x + 1 == Config::CHESS_NUMBER)
     {
         return;
     }
@@ -216,7 +216,7 @@ void Sensor::drawRightLine(QPainter &painter)
 
 void Sensor::drawLeftLine(QPainter &painter)
 {
-    if (x == 0)
+    if (point.x == 0)
     {
         return;
     }
@@ -230,7 +230,7 @@ void Sensor::drawLeftLine(QPainter &painter)
 
 void Sensor::drawDownLine(QPainter &painter)
 {
-    if (y + 1 == Config::CHESS_NUMBER)
+    if (point.y + 1 == Config::CHESS_NUMBER)
     {
         return;
     }
@@ -244,7 +244,7 @@ void Sensor::drawDownLine(QPainter &painter)
 
 void Sensor::drawUpLine(QPainter &painter)
 {
-    if (y == 0)
+    if (point.y == 0)
     {
         return;
     }

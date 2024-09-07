@@ -38,8 +38,7 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
 
 private:
-    int x;
-    int y;
+    Point point;
     bool isMouseOn = false;
     bool isPressed = false;
     ChessPlayer pressedPlayer = ChessPlayer::NONE;
