@@ -53,7 +53,7 @@ public:
     }
 
 private:
-    std::vector<point> moveRecords;
+    std::vector<Point> moveRecords;
 
     void saveIntoDisk()
     {

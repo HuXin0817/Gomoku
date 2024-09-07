@@ -11,20 +11,20 @@ enum class ChessPlayer
     WHITE
 };
 
-struct point
+struct Point
 {
     int x;
     int y;
 
-    point(int x, int y) : x(x), y(y) {}
+    Point(int x, int y) : x(x), y(y) {}
 
-    auto operator<=>(const point &other) const = default;
+    auto operator<=>(const Point &other) const = default;
 };
 
 template <>
-struct std::hash<point>
+struct std::hash<Point>
 {
-    std::size_t operator()(const point &p) const
+    std::size_t operator()(const Point &p) const
     {
         return reinterpret_cast<std::size_t>(&p);
     }

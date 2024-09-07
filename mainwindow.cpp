@@ -104,7 +104,7 @@ void MainWindow::reduceChessNumber()
     }
 }
 
-void MainWindow::reload(const std::vector<point> &moveRecord)
+void MainWindow::reload(const std::vector<Point> &moveRecord)
 {
     if (!sensors.empty())
     {
@@ -179,7 +179,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     handleResizeEvent();
 }
 
-std::vector<point> MainWindow::centerPieces() const
+std::vector<Point> MainWindow::centerPieces() const
 {
     int maxX = 0;
     int maxY = 0;

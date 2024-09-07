@@ -21,15 +21,15 @@ public:
 
     auto isGameOver() const { return gameOver; }
 
-    std::vector<point> winPieces() const;
+    std::vector<Point> winPieces() const;
 
     auto getMoveRecords() const { return moveRecords.get(); }
 
-    point undo();
+    Point undo();
 
     void restart();
 
-    point getBestPoint() const;
+    Point getBestPoint() const;
 
 private:
     bool gameOver = false;
@@ -43,9 +43,9 @@ private:
 
     static bool checkInBoard(int x, int y);
 
-    bool findOne(int x, int y, int dx, int dy, std::vector<point> &pos) const;
+    bool findOne(int x, int y, int dx, int dy, std::vector<Point> &pos) const;
 
-    std::unordered_set<point> getNearPoints() const;
+    std::unordered_set<Point> getNearPoints() const;
 
-    point getRandomFromNearPoints() const;
+    Point getRandomFromNearPoints() const;
 };

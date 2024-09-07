@@ -74,9 +74,9 @@ bool Board::judgeIsPos(int x, int y) const
     return true;
 }
 
-std::vector<point> Board::winPieces() const
+std::vector<Point> Board::winPieces() const
 {
-    std::vector<point> pos;
+    std::vector<Point> pos;
     for (int i = 0; i < Config::CHESS_NUMBER; i++)
     {
         for (int j = 0; j < Config::CHESS_NUMBER; j++)
@@ -102,7 +102,7 @@ std::vector<point> Board::winPieces() const
     return {};
 }
 
-bool Board::findOne(int x, int y, int dx, int dy, std::vector<point> &pos) const
+bool Board::findOne(int x, int y, int dx, int dy, std::vector<Point> &pos) const
 {
     pos.clear();
     int mx = x, my = y;
@@ -124,7 +124,7 @@ bool Board::checkInBoard(int x, int y)
     return x >= 0 && x < Config::CHESS_NUMBER && y >= 0 && y < Config::CHESS_NUMBER;
 }
 
-point Board::undo()
+Point Board::undo()
 {
     auto back = moveRecords.back();
     moveRecords.pop_back();
@@ -149,15 +149,15 @@ void Board::restart()
     moveRecords.clear();
 }
 
-point Board::getBestPoint() const
+Point Board::getBestPoint() const
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
     return getRandomFromNearPoints();
 }
 
-std::unordered_set<point> Board::getNearPoints() const
+std::unordered_set<Point> Board::getNearPoints() const
 {
-    std::unordered_set<point> nearPoints;
+    std::unordered_set<Point> nearPoints;
     for (auto [x, y] : moveRecords.get())
     {
         for (int i = -2; i <= 2; i++)
@@ -178,11 +178,11 @@ std::unordered_set<point> Board::getNearPoints() const
     return nearPoints;
 }
 
-point Board::getRandomFromNearPoints() const
+Point Board::getRandomFromNearPoints() const
 {
     auto nearPiecesSet = getNearPoints();
-    std::vector<point> nearPieces(nearPiecesSet.begin(), nearPiecesSet.end());
-    point point(Config::CHESS_NUMBER / 2, Config::CHESS_NUMBER / 2);
+    std::vector<Point> nearPieces(nearPiecesSet.begin(), nearPiecesSet.end());
+    Point point(Config::CHESS_NUMBER / 2, Config::CHESS_NUMBER / 2);
     if (!nearPieces.empty())
     {
         size_t idx = random() % nearPieces.size();

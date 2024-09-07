@@ -25,11 +25,11 @@ private:
     std::unique_ptr<Board> board;
     board_sensors sensors;
 
-    void reload(const std::vector<point> &moveRecord = {});
+    void reload(const std::vector<Point> &moveRecord = {});
 
     void reloadSize();
 
-    std::vector<point> centerPieces() const;
+    std::vector<Point> centerPieces() const;
 
     static double getMinWindowSize();
 
