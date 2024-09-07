@@ -173,11 +173,11 @@ void Sensor::drawShadowPoint(QPainter &painter)
     }
     double BOARD_PIECE_SPACING = width();
     auto shadowPointPos = BOARD_PIECE_SPACING / 2 * 1.05;
-    QPointF point(shadowPointPos, shadowPointPos);
+    QPointF p(shadowPointPos, shadowPointPos);
     auto BOARD_PIECE_WIDTH = Config::BOARD_PIECE_WIDTH(BOARD_PIECE_SPACING);
     painter.setPen(QPen(LineColor, 0));
     painter.setBrush(LineColor);
-    painter.drawEllipse(point, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
+    painter.drawEllipse(p, BOARD_PIECE_WIDTH, BOARD_PIECE_WIDTH);
 }
 
 void Sensor::drawStarPoint(QPainter &painter)
@@ -196,7 +196,8 @@ void Sensor::drawStarPoint(QPainter &painter)
     painter.setBrush(LineColor);
     double w = width();
     double h = height();
-    painter.drawEllipse(QPointF(w / 2, h / 2), Config::BOARD_STAR_POINT_WIDTH(), Config::BOARD_STAR_POINT_WIDTH());
+    QPointF p(w / 2, h / 2);
+    painter.drawEllipse(p, Config::BOARD_STAR_POINT_WIDTH(), Config::BOARD_STAR_POINT_WIDTH());
 }
 
 void Sensor::drawRightLine(QPainter &painter)
