@@ -9,8 +9,9 @@
 
 #define Shortcut(key) new QShortcut(QKeySequence(key), this), &QShortcut::activated, this
 
-class MainWindow final : public QMainWindow {
-Q_OBJECT
+class MainWindow final : public QMainWindow
+{
+    Q_OBJECT
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);

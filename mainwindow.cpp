@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), board(std::make_unique<Board>()) {
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
+{
+    board = std::make_unique<Board>();
     setWindowTitle("Gomoku");
     reload(board->getMoveRecords());
 
@@ -14,20 +16,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), board(std::make_u
     connect(Shortcut("Ctrl+2"), &MainWindow::setWriteAIPlayer);
 }
 
-void MainWindow::paintEvent(QPaintEvent *event) {
+void MainWindow::paintEvent(QPaintEvent *event)
+{
     QMainWindow::paintEvent(event);
     QPainter painter(this);
     painter.fillRect(rect(), BackGroundColor());
 }
 
-void MainWindow::undo() {
-    if (board->getMoveRecords().empty()) {
+void MainWindow::undo()
+{
+    if (board->getMoveRecords().empty())
+    {
         QApplication::beep();
         return;
     }
-    if (board->isGameOver()) {
+    if (board->isGameOver())
+    {
         auto pieces = board->winPieces();
-        for (auto [x, y]: pieces) {
+        for (auto [x, y] : pieces)
+        {
             sensors[x][y]->stopFlashing();
         }
     }
@@ -36,10 +43,12 @@ void MainWindow::undo() {
     notifyAIPlayer();
 }
 
-void MainWindow::addBoardSize() {
+void MainWindow::addBoardSize()
+{
     auto OLD_BOARD_PIECE_SPACING = Config::BOARD_PIECE_SPACING;
     Config::BOARD_PIECE_SPACING *= 1.1;
-    if (Config::BOARD_SIZE() > getMinWindowSize()) {
+    if (Config::BOARD_SIZE() > getMinWindowSize())
+    {
         Config::BOARD_PIECE_SPACING = OLD_BOARD_PIECE_SPACING;
         QApplication::beep();
         return;
@@ -47,18 +56,24 @@ void MainWindow::addBoardSize() {
     reloadSize();
 }
 
-void MainWindow::reduceBoardSize() {
-    if (Config::BOARD_PIECE_SPACING / 1.1 > 25) {
+void MainWindow::reduceBoardSize()
+{
+    if (Config::BOARD_PIECE_SPACING / 1.1 > 25)
+    {
         Config::BOARD_PIECE_SPACING /= 1.1;
         reloadSize();
-    } else {
+    }
+    else
+    {
         QApplication::beep();
     }
 }
 
-void MainWindow::addChessNumber() {
+void MainWindow::addChessNumber()
+{
     Config::CHESS_NUMBER += 2;
-    if (Config::BOARD_SIZE() > getMinWindowSize()) {
+    if (Config::BOARD_SIZE() > getMinWindowSize())
+    {
         Config::CHESS_NUMBER -= 2;
         QApplication::beep();
         return;
@@ -66,57 +81,75 @@ void MainWindow::addChessNumber() {
     reload(centerPieces());
 }
 
-void MainWindow::reduceChessNumber() {
-    if (Config::CHESS_NUMBER - 2 > 0) {
+void MainWindow::reduceChessNumber()
+{
+    if (Config::CHESS_NUMBER - 2 > 0)
+    {
         Config::CHESS_NUMBER -= 2;
         auto moves = centerPieces();
-        for (auto [x, y]: moves) {
-            if (x >= Config::CHESS_NUMBER || y >= Config::CHESS_NUMBER) {
+        for (auto [x, y] : moves)
+        {
+            if (x >= Config::CHESS_NUMBER || y >= Config::CHESS_NUMBER)
+            {
                 Config::CHESS_NUMBER += 2;
                 QApplication::beep();
                 return;
             }
         }
         reload(moves);
-    } else {
+    }
+    else
+    {
         QApplication::beep();
     }
 }
 
-void MainWindow::reload(const std::vector<point> &moveRecord) {
-    if (!sensors.empty()) {
-        for (auto [x, y]: board->getMoveRecords()) {
+void MainWindow::reload(const std::vector<point> &moveRecord)
+{
+    if (!sensors.empty())
+    {
+        for (auto [x, y] : board->getMoveRecords())
+        {
             sensors[x][y]->clear();
         }
     }
     board->restart();
     reloadSize();
-    for (auto [x, y]: moveRecord) {
-        if (x < Config::CHESS_NUMBER && y < Config::CHESS_NUMBER) {
+    for (auto [x, y] : moveRecord)
+    {
+        if (x < Config::CHESS_NUMBER && y < Config::CHESS_NUMBER)
+        {
             sensors[x][y]->press();
         }
     }
     update();
 }
 
-void MainWindow::reloadSize() {
-    while (sensors.size() > Config::CHESS_NUMBER) {
+void MainWindow::reloadSize()
+{
+    while (sensors.size() > Config::CHESS_NUMBER)
+    {
         sensors.pop_back();
     }
-    while (sensors.size() < Config::CHESS_NUMBER) {
+    while (sensors.size() < Config::CHESS_NUMBER)
+    {
         sensors.emplace_back();
     }
-    for (int i = 0; i < Config::CHESS_NUMBER; i++) {
-        while (sensors[i].size() > Config::CHESS_NUMBER) {
+    for (int i = 0; i < Config::CHESS_NUMBER; i++)
+    {
+        while (sensors[i].size() > Config::CHESS_NUMBER)
+        {
             sensors[i].pop_back();
         }
-        while (sensors[i].size() < Config::CHESS_NUMBER) {
+        while (sensors[i].size() < Config::CHESS_NUMBER)
+        {
             int j = sensors[i].size();
             sensors[i].emplace_back(std::make_unique<Sensor>(this, board.get(), i, j, &sensors));
             sensors[i][j]->setGeometry(0, 0, 0, 0);
         }
     }
-    if (!isFullScreen()) {
+    if (!isFullScreen())
+    {
         QSize newSize(Config::BOARD_SIZE(), Config::BOARD_SIZE());
 
         auto *animationGroup = new QParallelAnimationGroup(this);
@@ -140,31 +173,36 @@ void MainWindow::reloadSize() {
     handleResizeEvent();
 }
 
-void MainWindow::resizeEvent(QResizeEvent *event) {
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
     QWidget::resizeEvent(event);
     handleResizeEvent();
 }
 
-std::vector<point> MainWindow::centerPieces() const {
+std::vector<point> MainWindow::centerPieces() const
+{
     int maxX = 0;
     int maxY = 0;
     int minX = Config::CHESS_NUMBER;
     int minY = Config::CHESS_NUMBER;
     auto moveRecords = board->getMoveRecords();
-    for (auto [x, y]: moveRecords) {
+    for (auto [x, y] : moveRecords)
+    {
         maxX = std::max(x, maxX);
         maxY = std::max(y, maxY);
         minX = std::min(x, minX);
         minY = std::min(y, minY);
     }
-    for (auto &[x, y]: moveRecords) {
+    for (auto &[x, y] : moveRecords)
+    {
         x = x + (Config::CHESS_NUMBER - maxX - minX) / 2;
         y = y + (Config::CHESS_NUMBER - maxY - minY) / 2;
     }
     return moveRecords;
 }
 
-double MainWindow::getMinWindowSize() {
+double MainWindow::getMinWindowSize()
+{
     auto *screen = QGuiApplication::primaryScreen();
     auto screenWidth = screen->geometry().width();
     auto screenHeight = screen->geometry().height();
@@ -172,15 +210,18 @@ double MainWindow::getMinWindowSize() {
     return minSize - 50;
 }
 
-void MainWindow::handleResizeEvent() {
+void MainWindow::handleResizeEvent()
+{
     double width = size().width();
     double height = size().height();
     auto midX = width / 2;
     auto midY = height / 2;
 
     auto *animationGroup = new QParallelAnimationGroup(this);
-    for (int i = 0; i < Config::CHESS_NUMBER; i++) {
-        for (int j = 0; j < Config::CHESS_NUMBER; j++) {
+    for (int i = 0; i < Config::CHESS_NUMBER; i++)
+    {
+        for (int j = 0; j < Config::CHESS_NUMBER; j++)
+        {
             auto x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING - 0.5;
             auto y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING - 0.5;
             sensors[i][j]->setMouseOn(false);
@@ -207,23 +248,30 @@ void MainWindow::handleResizeEvent() {
     animationGroup->start();
 }
 
-void MainWindow::notifyAIPlayer() {
-    if (Config::AI_CHESS_PLAYER[board->getNowPlayer()]) {
+void MainWindow::notifyAIPlayer()
+{
+    if (Config::AI_CHESS_PLAYER[board->getNowPlayer()])
+    {
         auto point = board->getBestPoint();
         sensors[point.x][point.y]->press();
     }
 }
 
-void MainWindow::setAIPlayer(ChessPlayer player) {
-    if (Config::AI_CHESS_PLAYER[player]) {
+void MainWindow::setAIPlayer(ChessPlayer player)
+{
+    if (Config::AI_CHESS_PLAYER[player])
+    {
         Config::AI_CHESS_PLAYER[player] = false;
-    } else {
+    }
+    else
+    {
         Config::AI_CHESS_PLAYER[player] = true;
         notifyAIPlayer();
     }
 }
 
-void MainWindow::restart() {
+void MainWindow::restart()
+{
     reload();
     notifyAIPlayer();
 }

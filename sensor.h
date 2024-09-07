@@ -11,8 +11,9 @@ class Sensor;
 
 using board_sensors = std::vector<std::vector<std::unique_ptr<Sensor>>>;
 
-class Sensor final : public QWidget {
-Q_OBJECT
+class Sensor final : public QWidget
+{
+    Q_OBJECT
 
 public:
     Sensor(QWidget *parent, Board *board, int x, int y, board_sensors *s);
