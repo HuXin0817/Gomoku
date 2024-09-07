@@ -18,7 +18,7 @@ struct Point
 
     Point(int x, int y) : x(x), y(y) {}
 
-    auto operator<=>(const Point &other) const = default;
+    auto operator<=>(const Point &) const = default;
 };
 
 template <>
