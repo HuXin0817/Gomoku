@@ -10,42 +10,42 @@
 
 class Board
 {
-public:
+  public:
     Board() : chessMap(Config::CHESS_NUMBER, std::vector<ChessPlayer>(Config::CHESS_NUMBER)) {}
 
     void addPiece(int x, int y);
 
-    bool judgeIsPos(int x, int y) const;
+    [[nodiscard]] bool judgeIsPos(int x, int y) const;
 
-    auto getNowPlayer() const { return nowPlayer; }
+    [[nodiscard]] const auto getNowPlayer() const { return nowPlayer; }
 
-    auto isGameOver() const { return gameOver; }
+    [[nodiscard]] const auto isGameOver() const { return gameOver; }
 
-    std::vector<Point> winPieces() const;
+    [[nodiscard]] std::vector<Point> winPieces() const;
 
-    auto getMoveRecords() const { return moveRecords.get(); }
+    [[nodiscard]] const auto getMoveRecords() const { return moveRecords.get(); }
 
     Point undo();
 
     void restart();
 
-    Point getBestPoint() const;
+    [[nodiscard]] Point getBestPoint() const;
 
-private:
-    bool gameOver = false;
-    ChessPlayer nowPlayer = ChessPlayer::BLACK;
+  private:
+    bool                                  gameOver  = false;
+    ChessPlayer                           nowPlayer = ChessPlayer::BLACK;
     std::vector<std::vector<ChessPlayer>> chessMap;
-    MoveRecords moveRecords;
+    MoveRecords                           moveRecords;
 
-    bool checkWin(int x, int y) const;
+    [[nodiscard]] bool checkWin(int x, int y) const;
 
-    bool checkLine(int x, int y, int dx, int dy) const;
+    [[nodiscard]] bool checkLine(int x, int y, int dx, int dy) const;
 
     static bool checkInBoard(int x, int y);
 
     bool findOne(int x, int y, int dx, int dy, std::vector<Point> &pos) const;
 
-    std::unordered_set<Point> getNearPoints() const;
+    [[nodiscard]] std::unordered_set<Point> getNearPoints() const;
 
-    Point getRandomFromNearPoints() const;
+    [[nodiscard]] Point getRandomFromNearPoints() const;
 };

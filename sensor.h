@@ -15,7 +15,7 @@ class Sensor final : public QWidget
 {
     Q_OBJECT
 
-public:
+  public:
     Sensor(QWidget *parent, Board *board, int x, int y, board_sensors *s);
 
     void flashing();
@@ -28,7 +28,7 @@ public:
 
     void clear();
 
-protected:
+  protected:
     void enterEvent(QEnterEvent *event) override;
 
     void leaveEvent(QEvent *event) override;
@@ -37,15 +37,15 @@ protected:
 
     void mousePressEvent(QMouseEvent *event) override;
 
-private:
-    Point point;
-    bool isMouseOn = false;
-    bool isPressed = false;
-    ChessPlayer pressedPlayer = ChessPlayer::NONE;
-    Board *nowBoard;
-    board_sensors *sensors;
-    QGraphicsOpacityEffect *opacityEffect;
-    QPropertyAnimation *opacityAnimation;
+  private:
+    Point                   point;
+    bool                    isMouseOn        = false;
+    bool                    isPressed        = false;
+    ChessPlayer             pressedPlayer    = ChessPlayer::NONE;
+    Board                  *nowBoard         = nullptr;
+    board_sensors          *sensors          = nullptr;
+    QGraphicsOpacityEffect *opacityEffect    = nullptr;
+    QPropertyAnimation     *opacityAnimation = nullptr;
 
     void drawShadowPoint(QPainter &painter);
 

@@ -12,18 +12,16 @@ class MoveRecords
 
     static inline auto moveRecordsDataFilePath = dir + "/move_records.data";
 
-public:
+  public:
     MoveRecords()
     {
-        auto filename = moveRecordsDataFilePath;
+        auto          filename = moveRecordsDataFilePath;
         std::ifstream file(filename, std::ios::binary);
-        if (!file)
-        {
+        if (!file) {
             std::filesystem::create_directory(dir);
             return;
         }
-        while (!file.eof())
-        {
+        while (!file.eof()) {
             int x, y;
             file >> x >> y;
             moveRecords.emplace_back(x, y);
@@ -52,15 +50,14 @@ public:
         saveIntoDisk();
     }
 
-private:
+  private:
     std::vector<Point> moveRecords;
 
     void saveIntoDisk()
     {
-        auto filename = moveRecordsDataFilePath;
+        auto          filename = moveRecordsDataFilePath;
         std::ofstream file(filename, std::ios::binary);
-        for (auto [x, y] : moveRecords)
-        {
+        for (auto [x, y] : moveRecords) {
             file << x << " " << y << std::endl;
         }
     }

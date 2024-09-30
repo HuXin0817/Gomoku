@@ -24,51 +24,33 @@ struct Point
 template <>
 struct std::hash<Point>
 {
-    std::size_t operator()(const Point &p) const
-    {
-        return (std::size_t(p.x) << (sizeof(std::size_t) / 2)) + p.y;
-    }
+    std::size_t operator()(const Point &p) const { return (std::size_t(p.x) << (sizeof(std::size_t) / 2)) + p.y; }
 };
 
 struct Config
 {
-    static inline int WIN_PIECE_NUMBER = 5;
-    static inline double CHESS_NUMBER = 15;
+    static inline int    WIN_PIECE_NUMBER    = 5;
+    static inline double CHESS_NUMBER        = 15;
     static inline double BOARD_PIECE_SPACING = 36.0;
 
     static auto BOARD_LINE_WIDTH() { return BOARD_PIECE_SPACING / 20.0; }
 
-    static auto BOARD_LINE_WIDTH(double BOARD_PIECE_SPACING)
-    {
-        return BOARD_PIECE_SPACING / 20.0;
-    }
+    static auto BOARD_LINE_WIDTH(double BOARD_PIECE_SPACING) { return BOARD_PIECE_SPACING / 20.0; }
 
-    static auto BOARD_STAR_POINT_WIDTH()
-    {
-        return BOARD_LINE_WIDTH() * 2;
-    }
+    static auto BOARD_STAR_POINT_WIDTH() { return BOARD_LINE_WIDTH() * 2; }
 
-    static auto BOARD_PIECE_WIDTH(double BOARD_PIECE_SPACING)
-    {
-        return BOARD_LINE_WIDTH(BOARD_PIECE_SPACING) * 8;
-    }
+    static auto BOARD_PIECE_WIDTH(double BOARD_PIECE_SPACING) { return BOARD_LINE_WIDTH(BOARD_PIECE_SPACING) * 8; }
 
     static auto BOARD_MARGIN() { return BOARD_PIECE_SPACING / 4 * 5; }
 
-    static auto BOARD_SIZE()
-    {
-        return BOARD_MARGIN() * 2 + BOARD_PIECE_SPACING * (CHESS_NUMBER - 1);
-    }
+    static auto BOARD_SIZE() { return BOARD_MARGIN() * 2 + BOARD_PIECE_SPACING * (CHESS_NUMBER - 1); }
 
     static std::vector<double> StarPositions()
     {
         double starPos = int(CHESS_NUMBER / 5);
-        if (starPos < 2)
-        {
+        if (starPos < 2) {
             return {(CHESS_NUMBER - 1) / 2};
-        }
-        else
-        {
+        } else {
             return {starPos, (CHESS_NUMBER - 1) / 2, CHESS_NUMBER - starPos - 1};
         }
     }
@@ -78,20 +60,11 @@ struct Config
 
 static constexpr QColor LineColor = {128, 128, 128};
 
-inline bool IS_DARK_THEME()
-{
-    return qApp->palette().color(QPalette::Window).lightness() < 128;
-}
+inline bool IS_DARK_THEME() { return qApp->palette().color(QPalette::Window).lightness() < 128; }
 
-inline QColor BackGroundColor()
-{
-    return IS_DARK_THEME() ? QColor(60, 60, 60) : QColor(205, 205, 205);
-}
+inline QColor BackGroundColor() { return IS_DARK_THEME() ? QColor(60, 60, 60) : QColor(205, 205, 205); }
 
-inline QColor BlackFringePieceColor()
-{
-    return IS_DARK_THEME() ? QColor(30, 30, 30) : QColor(40, 40, 40);
-}
+inline QColor BlackFringePieceColor() { return IS_DARK_THEME() ? QColor(30, 30, 30) : QColor(40, 40, 40); }
 
 inline QColor BlackMidPieceColor()
 {
@@ -99,10 +72,7 @@ inline QColor BlackMidPieceColor()
     return {rgb, rgb, rgb};
 }
 
-inline QColor WriteFringePieceColor()
-{
-    return IS_DARK_THEME() ? QColor(165, 165, 165) : QColor(205, 205, 205);
-}
+inline QColor WriteFringePieceColor() { return IS_DARK_THEME() ? QColor(165, 165, 165) : QColor(205, 205, 205); }
 
 inline QColor WriteMidPieceColor()
 {

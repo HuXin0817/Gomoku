@@ -25,16 +25,13 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
 void MainWindow::undo()
 {
-    if (board->getMoveRecords().empty())
-    {
+    if (board->getMoveRecords().empty()) {
         QApplication::beep();
         return;
     }
-    if (board->isGameOver())
-    {
+    if (board->isGameOver()) {
         auto pieces = board->winPieces();
-        for (auto [x, y] : pieces)
-        {
+        for (auto [x, y] : pieces) {
             sensors[x][y]->stopFlashing();
         }
     }
@@ -47,8 +44,7 @@ void MainWindow::addBoardSize()
 {
     auto OLD_BOARD_PIECE_SPACING = Config::BOARD_PIECE_SPACING;
     Config::BOARD_PIECE_SPACING *= 1.1;
-    if (Config::BOARD_SIZE() > getMinWindowSize())
-    {
+    if (Config::BOARD_SIZE() > getMinWindowSize()) {
         Config::BOARD_PIECE_SPACING = OLD_BOARD_PIECE_SPACING;
         QApplication::beep();
         return;
@@ -58,13 +54,10 @@ void MainWindow::addBoardSize()
 
 void MainWindow::reduceBoardSize()
 {
-    if (Config::BOARD_PIECE_SPACING / 1.1 > 25)
-    {
+    if (Config::BOARD_PIECE_SPACING / 1.1 > 25) {
         Config::BOARD_PIECE_SPACING /= 1.1;
         reloadSize();
-    }
-    else
-    {
+    } else {
         QApplication::beep();
     }
 }
@@ -72,8 +65,7 @@ void MainWindow::reduceBoardSize()
 void MainWindow::addChessNumber()
 {
     Config::CHESS_NUMBER += 2;
-    if (Config::BOARD_SIZE() > getMinWindowSize())
-    {
+    if (Config::BOARD_SIZE() > getMinWindowSize()) {
         Config::CHESS_NUMBER -= 2;
         QApplication::beep();
         return;
@@ -83,42 +75,33 @@ void MainWindow::addChessNumber()
 
 void MainWindow::reduceChessNumber()
 {
-    if (Config::CHESS_NUMBER - 2 > 0)
-    {
+    if (Config::CHESS_NUMBER - 2 > 0) {
         Config::CHESS_NUMBER -= 2;
         auto moves = centerPieces();
-        for (auto [x, y] : moves)
-        {
-            if (x >= Config::CHESS_NUMBER || y >= Config::CHESS_NUMBER)
-            {
+        for (auto [x, y] : moves) {
+            if (x >= Config::CHESS_NUMBER || y >= Config::CHESS_NUMBER) {
                 Config::CHESS_NUMBER += 2;
                 QApplication::beep();
                 return;
             }
         }
         reload(moves);
-    }
-    else
-    {
+    } else {
         QApplication::beep();
     }
 }
 
 void MainWindow::reload(const std::vector<Point> &moveRecord)
 {
-    if (!sensors.empty())
-    {
-        for (auto [x, y] : board->getMoveRecords())
-        {
+    if (!sensors.empty()) {
+        for (auto [x, y] : board->getMoveRecords()) {
             sensors[x][y]->clear();
         }
     }
     board->restart();
     reloadSize();
-    for (auto [x, y] : moveRecord)
-    {
-        if (x < Config::CHESS_NUMBER && y < Config::CHESS_NUMBER)
-        {
+    for (auto [x, y] : moveRecord) {
+        if (x < Config::CHESS_NUMBER && y < Config::CHESS_NUMBER) {
             sensors[x][y]->press();
         }
     }
@@ -127,33 +110,27 @@ void MainWindow::reload(const std::vector<Point> &moveRecord)
 
 void MainWindow::reloadSize()
 {
-    while (sensors.size() > Config::CHESS_NUMBER)
-    {
+    while (sensors.size() > Config::CHESS_NUMBER) {
         sensors.pop_back();
     }
-    while (sensors.size() < Config::CHESS_NUMBER)
-    {
+    while (sensors.size() < Config::CHESS_NUMBER) {
         sensors.emplace_back();
     }
-    for (int i = 0; i < Config::CHESS_NUMBER; i++)
-    {
-        while (sensors[i].size() > Config::CHESS_NUMBER)
-        {
+    for (int i = 0; i < Config::CHESS_NUMBER; i++) {
+        while (sensors[i].size() > Config::CHESS_NUMBER) {
             sensors[i].pop_back();
         }
-        while (sensors[i].size() < Config::CHESS_NUMBER)
-        {
+        while (sensors[i].size() < Config::CHESS_NUMBER) {
             int j = sensors[i].size();
             sensors[i].emplace_back(std::make_unique<Sensor>(this, board.get(), i, j, &sensors));
             sensors[i][j]->setGeometry(0, 0, 0, 0);
         }
     }
-    if (!isFullScreen())
-    {
+    if (!isFullScreen()) {
         QSize newSize(Config::BOARD_SIZE(), Config::BOARD_SIZE());
 
         auto *animationGroup = new QParallelAnimationGroup(this);
-        auto *sizeAnimation = new QPropertyAnimation(this, "size");
+        auto *sizeAnimation  = new QPropertyAnimation(this, "size");
         sizeAnimation->setDuration(150);
         sizeAnimation->setEasingCurve(QEasingCurve::OutQuad);
         sizeAnimation->setStartValue(size());
@@ -181,20 +158,18 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 std::vector<Point> MainWindow::centerPieces() const
 {
-    int maxX = 0;
-    int maxY = 0;
-    int minX = Config::CHESS_NUMBER;
-    int minY = Config::CHESS_NUMBER;
+    int  maxX        = 0;
+    int  maxY        = 0;
+    int  minX        = Config::CHESS_NUMBER;
+    int  minY        = Config::CHESS_NUMBER;
     auto moveRecords = board->getMoveRecords();
-    for (auto [x, y] : moveRecords)
-    {
+    for (auto [x, y] : moveRecords) {
         maxX = std::max(x, maxX);
         maxY = std::max(y, maxY);
         minX = std::min(x, minX);
         minY = std::min(y, minY);
     }
-    for (auto &[x, y] : moveRecords)
-    {
+    for (auto &[x, y] : moveRecords) {
         x = x + (Config::CHESS_NUMBER - maxX - minX) / 2;
         y = y + (Config::CHESS_NUMBER - maxY - minY) / 2;
     }
@@ -203,25 +178,23 @@ std::vector<Point> MainWindow::centerPieces() const
 
 double MainWindow::getMinWindowSize()
 {
-    auto *screen = QGuiApplication::primaryScreen();
-    auto screenWidth = screen->geometry().width();
-    auto screenHeight = screen->geometry().height();
-    auto minSize = std::min(screenHeight, screenWidth);
+    auto *screen       = QGuiApplication::primaryScreen();
+    auto  screenWidth  = screen->geometry().width();
+    auto  screenHeight = screen->geometry().height();
+    auto  minSize      = std::min(screenHeight, screenWidth);
     return minSize - 50;
 }
 
 void MainWindow::handleResizeEvent()
 {
-    double width = size().width();
+    double width  = size().width();
     double height = size().height();
-    auto midX = width / 2;
-    auto midY = height / 2;
+    auto   midX   = width / 2;
+    auto   midY   = height / 2;
 
     auto *animationGroup = new QParallelAnimationGroup(this);
-    for (int i = 0; i < Config::CHESS_NUMBER; i++)
-    {
-        for (int j = 0; j < Config::CHESS_NUMBER; j++)
-        {
+    for (int i = 0; i < Config::CHESS_NUMBER; i++) {
+        for (int j = 0; j < Config::CHESS_NUMBER; j++) {
             auto x = midX + (i - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING - 0.5;
             auto y = midY + (j - Config::CHESS_NUMBER / 2) * Config::BOARD_PIECE_SPACING - 0.5;
             sensors[i][j]->setMouseOn(false);
@@ -233,7 +206,7 @@ void MainWindow::handleResizeEvent()
             posAnimation->setEasingCurve(QEasingCurve::OutQuad);
             animationGroup->addAnimation(posAnimation);
 
-            auto space = Config::BOARD_PIECE_SPACING + 1;
+            auto  space         = Config::BOARD_PIECE_SPACING + 1;
             auto *sizeAnimation = new QPropertyAnimation(sensors[i][j].get(), "size");
             sizeAnimation->setDuration(500);
             sizeAnimation->setStartValue(sensors[i][j]->size());
@@ -250,8 +223,7 @@ void MainWindow::handleResizeEvent()
 
 void MainWindow::notifyAIPlayer()
 {
-    if (Config::AI_CHESS_PLAYER[board->getNowPlayer()])
-    {
+    if (Config::AI_CHESS_PLAYER[board->getNowPlayer()]) {
         auto point = board->getBestPoint();
         sensors[point.x][point.y]->press();
     }
@@ -259,12 +231,9 @@ void MainWindow::notifyAIPlayer()
 
 void MainWindow::setAIPlayer(ChessPlayer player)
 {
-    if (Config::AI_CHESS_PLAYER[player])
-    {
+    if (Config::AI_CHESS_PLAYER[player]) {
         Config::AI_CHESS_PLAYER[player] = false;
-    }
-    else
-    {
+    } else {
         Config::AI_CHESS_PLAYER[player] = true;
         notifyAIPlayer();
     }

@@ -13,17 +13,17 @@ class MainWindow final : public QMainWindow
 {
     Q_OBJECT
 
-public:
+  public:
     explicit MainWindow(QWidget *parent = nullptr);
 
-protected:
+  protected:
     void paintEvent(QPaintEvent *event) override;
 
     void resizeEvent(QResizeEvent *event) override;
 
-private:
+  private:
     std::unique_ptr<Board> board;
-    board_sensors sensors;
+    board_sensors          sensors;
 
     void reload(const std::vector<Point> &moveRecord = {});
 
@@ -35,7 +35,7 @@ private:
 
     void handleResizeEvent();
 
-private slots:
+  private slots:
 
     void undo();
 
