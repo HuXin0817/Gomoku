@@ -23,8 +23,8 @@ This project is a simple implementation of the classic **Gomoku** game (also kno
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/gomoku.git
-    cd gomoku
+    git clone https://github.com/HuXin0817/Gomoku.git
+    cd Gomoku
     ```
 
 2. Create a build directory:
