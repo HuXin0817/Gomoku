@@ -22,8 +22,8 @@ protected:
   void resizeEvent(QResizeEvent *event) override;
 
 private:
-  std::unique_ptr<Board> board;
-  board_sensors          sensors;
+  std::unique_ptr<Board>                            board;
+  std::vector<std::vector<std::unique_ptr<Sensor>>> sensors;
 
   void reload(const std::vector<Point> &moveRecord = {});
 

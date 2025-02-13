@@ -1,6 +1,7 @@
 #include "sensor.h"
 
-Sensor::Sensor(QWidget *parent, Board *board, int x, int y, board_sensors *s) : QWidget(parent), point(x, y)
+Sensor::Sensor(QWidget *parent, Board *board, int x, int y, std::vector<std::vector<std::unique_ptr<Sensor>>> *s)
+    : QWidget(parent), point(x, y)
 {
   nowBoard         = board;
   sensors          = s;
