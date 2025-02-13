@@ -39,5 +39,5 @@ private:
 
   static bool checkInBoard(int x, int y);
 
-  bool findOne(int x, int y, int dx, int dy, std::vector<Point> &pos) const;
+  std::vector<Point> findOne(int x, int y, int dx, int dy) const;
 };

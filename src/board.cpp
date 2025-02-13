@@ -68,36 +68,49 @@ std::vector<Point> Board::winPieces() const
   std::vector<Point> pos;
   for (int i = 0; i < Config::CHESS_NUMBER; i++) {
     for (int j = 0; j < Config::CHESS_NUMBER; j++) {
-      if (findOne(i, j, 1, 0, pos)) {
-        return pos;
+      auto find = findOne(i, j, 1, 0);
+      if (find.size() >= Config::WIN_PIECE_NUMBER) {
+        for (auto p : find) {
+          pos.emplace_back(p);
+        }
       }
-      if (findOne(i, j, 1, 1, pos)) {
-        return pos;
+      find = findOne(i, j, 1, 1);
+      if (find.size() >= Config::WIN_PIECE_NUMBER) {
+        for (auto p : find) {
+          pos.emplace_back(p);
+        }
       }
-      if (findOne(i, j, 1, -1, pos)) {
-        return pos;
+      find = findOne(i, j, 1, -1);
+      if (find.size() >= Config::WIN_PIECE_NUMBER) {
+        for (auto p : find) {
+          pos.emplace_back(p);
+        }
       }
-      if (findOne(i, j, 0, 1, pos)) {
-        return pos;
+      find = findOne(i, j, 0, 1);
+      if (find.size() >= Config::WIN_PIECE_NUMBER) {
+        for (auto p : find) {
+          pos.emplace_back(p);
+        }
       }
     }
   }
-  return {};
+  return pos;
 }
 
-bool Board::findOne(int x, int y, int dx, int dy, std::vector<Point> &pos) const
+std::vector<Point> Board::findOne(int x, int y, int dx, int dy) const
 {
+  std::vector<Point> pos;
   pos.clear();
   int mx = x, my = y;
   if (chessMap[x][y] == ChessPlayer::NONE) {
-    return false;
+    return {};
   }
   while (checkInBoard(mx, my) && chessMap[mx][my] == chessMap[x][y]) {
     pos.emplace_back(mx, my);
     mx += dx;
     my += dy;
   }
-  return pos.size() >= Config::WIN_PIECE_NUMBER;
+  return pos;
 }
 
 bool Board::checkInBoard(int x, int y)
