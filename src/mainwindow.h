@@ -7,45 +7,55 @@
 
 #include "sensor.h"
 
-#define Shortcut(key) new QShortcut(QKeySequence(key), this), &QShortcut::activated, this
-
-class MainWindow final : public QMainWindow
-{
+class MainWindow final : public QMainWindow {
   Q_OBJECT
 
-public:
-  explicit MainWindow(QWidget *parent = nullptr);
+  public:
+  explicit MainWindow(QWidget* parent = nullptr);
 
-protected:
-  void paintEvent(QPaintEvent *event) override;
+  protected:
+  void
+  paintEvent(QPaintEvent* event) override;
 
-  void resizeEvent(QResizeEvent *event) override;
+  void
+  resizeEvent(QResizeEvent* event) override;
 
-private:
+  private:
   std::unique_ptr<Board> board;
-  board_sensors          sensors;
+  std::vector<std::vector<std::unique_ptr<Sensor>>> sensors;
 
-  void reload(const std::vector<Point> &moveRecord = {});
+  void
+  reload(const std::vector<Point>& moveRecord = {});
 
-  void reloadSize();
+  void
+  reloadSize();
 
-  std::vector<Point> centerPieces() const;
+  std::vector<Point>
+  centerPieces() const;
 
-  static double getMinWindowSize();
+  static double
+  getMinWindowSize();
 
-  void handleResizeEvent();
+  void
+  handleResizeEvent();
 
-private slots:
+  private slots:
 
-  void undo();
+  void
+  undo();
 
-  void addBoardSize();
+  void
+  addBoardSize();
 
-  void reduceBoardSize();
+  void
+  reduceBoardSize();
 
-  void addChessNumber();
+  void
+  addChessNumber();
 
-  void reduceChessNumber();
+  void
+  reduceChessNumber();
 
-  void restart();
+  void
+  restart();
 };

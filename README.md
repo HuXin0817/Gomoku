@@ -1,11 +1,5 @@
 # Gomoku
 
-<div align="center">
-    <img src="README.assets/icon.jpg"  width=25% /> 
-</div>
-
----
-
 This project is a simple implementation of the classic **Gomoku** game (also known as Five-in-a-Row) using C++ and the Qt framework. The game is played on a 15x15 board, and the first player to align five of their pieces horizontally, vertically, or diagonally wins.
 
 ## Features
@@ -15,7 +9,7 @@ This project is a simple implementation of the classic **Gomoku** game (also kno
 - **Graphical Interface**: The game features a graphical interface created with Qt, displaying the board and pieces with smooth graphics.
 - **Responsive Input**: The game responds to mouse clicks, allowing players to place their pieces on the board.
 
-![demo](./README.assets/demo.png)
+![demo](./demo.png)
 
 ## Installation
 

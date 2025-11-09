@@ -1,43 +1,62 @@
 #pragma once
 
-#include "common.h"
-
 #include <fstream>
 #include <thread>
-#include <unordered_set>
 
-class Board
-{
-public:
-  Board() : chessMap(Config::CHESS_NUMBER, std::vector<ChessPlayer>(Config::CHESS_NUMBER)) {}
+#include "common.h"
 
-  void addPiece(int x, int y);
+class Board {
+  public:
+  Board()
+      : chessMap(static_cast<size_t>(Config::ChessNumber),
+                 std::vector<ChessPlayer>(static_cast<size_t>(Config::ChessNumber))) {
+  }
 
-  [[nodiscard]] bool judgeIsPos(int x, int y) const;
+  void
+  addPiece(int x, int y);
 
-  [[nodiscard]] auto getNowPlayer() const { return nowPlayer; }
+  bool
+  judgeIsPos(int x, int y) const;
 
-  [[nodiscard]] auto isGameOver() const { return gameOver; }
+  auto
+  getNowPlayer() const {
+    return nowPlayer;
+  }
 
-  [[nodiscard]] std::vector<Point> winPieces() const;
+  auto
+  isGameOver() const {
+    return gameOver;
+  }
 
-  [[nodiscard]] const auto &getMoveRecords() const { return moveRecords; }
+  std::vector<Point>
+  winPieces() const;
 
-  Point undo();
+  const auto&
+  getMoveRecords() const {
+    return moveRecords;
+  }
 
-  void restart();
+  Point
+  undo();
 
-private:
-  bool                                  gameOver  = false;
-  ChessPlayer                           nowPlayer = ChessPlayer::BLACK;
+  void
+  restart();
+
+  private:
+  bool gameOver = false;
+  ChessPlayer nowPlayer = ChessPlayer::Black;
   std::vector<std::vector<ChessPlayer>> chessMap;
-  std::vector<Point>                    moveRecords;
+  std::vector<Point> moveRecords;
 
-  [[nodiscard]] bool checkWin(int x, int y) const;
+  bool
+  checkWin(int x, int y) const;
 
-  [[nodiscard]] bool checkLine(int x, int y, int dx, int dy) const;
+  bool
+  checkLine(int x, int y, int dx, int dy) const;
 
-  static bool checkInBoard(int x, int y);
+  static bool
+  checkInBoard(int x, int y);
 
-  bool findOne(int x, int y, int dx, int dy, std::vector<Point> &pos) const;
+  std::vector<Point>
+  findOne(int x, int y, int dx, int dy) const;
 };
